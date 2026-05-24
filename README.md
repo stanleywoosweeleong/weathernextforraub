@@ -31,11 +31,11 @@ farms as you like from inside the app.
 |---|---|---|
 | Sg. Ruan (Fang Goo) | 双溪兰 晓方 | 3.77883, 101.94133 |
 | Sg. Klau - Fang Goo | 双溪吉流 - 晓方 | 3.71967, 102.01033 |
-| Sg. Klau - CT Tan | 双溪吉流 - CT Tan | 3.71700, 102.00550 |
+| Sg. Klau 1 - CT Tan | 双溪吉流 1 - CT Tan | 3.71700, 102.00550 |
 | Kg. Sg. Ruan - Neng | 双溪兰 - 能 | 3.79361, 101.93472 |
 | Kg. Sg. Ruan - Jerry Phoon | 双溪兰新村 - Jerry Phoon | 3.79194, 101.94278 |
 | Sg. Klau - Kwong Seng | 双溪吉流 - Kwong Seng | 3.74833, 101.95133 |
-| Sg. Klau - CT Tan | 双溪吉流 - CT Tan | 3.74417, 101.96917 |
+| Sg. Klau 2 - CT Tan | 双溪吉流 2 - CT Tan | 3.74417, 101.96917 |
 | Kg. Sg. Klau - Thompson | 双溪吉流新村 - Thompson | 3.74750, 101.97694 |
 | Kg. Sg. Klau - Soon | 双溪吉流新村 - 顺 | 3.78392, 101.98063 |
 | Kampung Temau - Eric | 甘榜特茂 Eric | 3.92900, 101.92100 |
@@ -45,12 +45,17 @@ farms as you like from inside the app.
 | Jerkoh | 日利谷 | 4.04861, 101.92028 |
 | SJKC Cheroh | 积罗国民型华文学校 | 3.90293, 101.81499 |
 
-Two pairs of farms share an English name (**Sg. Klau - CT Tan**) but sit at
-different coordinates — they are distinct seed entries with distinct IDs, so
-they appear as two separate cards in the app.
+Two of CT Tan's plots in Sg. Klau are distinct farms at separate
+coordinates — seeded as **Sg. Klau 1 - CT Tan** and **Sg. Klau 2 - CT Tan**
+so they are easy to tell apart in the app.
 
 The app also seeds a default user display name (**Raub**), which stays editable
 via **Edit Name** in the app.
+
+*Seed v3:* the two CT Tan plots were renamed from a shared label to
+**Sg. Klau 1 / 2 - CT Tan**. Existing installs pick this up automatically on
+their next visit — no need to clear data — and any farm a user renamed
+themselves is left untouched.
 
 ---
 
