@@ -1,4 +1,4 @@
-<!-- WeatherNext company build — weathernextforraub — 2026-05-24T00:00:00 -->
+<!-- WeatherNext company build — weathernextforjohor — 2026-05-23T01:38:46 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -113,7 +113,7 @@
         }
     </style>
     
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%237dd3fc%22/><circle cx=%2278%22 cy=%2226%22 r=%2210%22 fill=%22%23fbbf24%22/><ellipse cx=%2224%22 cy=%2224%22 rx=%2213%22 ry=%225%22 fill=%22%23fff%22/><path d=%22M-5 72 L40 22 L72 72 Z%22 fill=%22%235b8c5a%22/><path d=%22M28 78 L60 14 L94 78 Z%22 fill=%22%233f7d3f%22/><path d=%22M60 14 L94 78 L60 78 Z%22 fill=%22%232f5f2f%22/><path d=%22M60 14 L52 31 L57 33 L60 27 L62 32 Z%22 fill=%22%235aa45a%22 opacity=%220.85%22/><path d=%22M0 74 Q50 64 100 74 L100 100 L0 100 Z%22 fill=%22%234f9e35%22/><circle cx=%2222%22 cy=%2280%22 r=%2210%22 fill=%22%232e7d32%22/><rect x=%2220%22 y=%2286%22 width=%224%22 height=%229%22 fill=%22%237c4a21%22/><circle cx=%2280%22 cy=%2282%22 r=%2211%22 fill=%22%232e7d32%22/><rect x=%2278%22 y=%2289%22 width=%224%22 height=%229%22 fill=%22%237c4a21%22/><circle cx=%2250%22 cy=%2284%22 r=%224%22 fill=%22%23f0c19a%22/><rect x=%2246%22 y=%2288%22 width=%228%22 height=%229%22 rx=%222%22 fill=%22%23ea7a35%22/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%237dd3fc%22/><path d=%22M0 55 L100 55 L100 100 L0 100 Z%22 fill=%22%2322c55e%22/><path d=%22M0 70 L100 70 L100 100 L0 100 Z%22 fill=%22%2315803d%22/><circle cx=%2270%22 cy=%2232%22 r=%2213%22 fill=%22%23fbbf24%22/><g stroke=%22%23fbbf24%22 stroke-width=%222.5%22 stroke-linecap=%22round%22><line x1=%2270%22 y1=%2210%22 x2=%2270%22 y2=%2216%22/><line x1=%2286%22 y1=%2232%22 x2=%2292%22 y2=%2232%22/><line x1=%2248%22 y1=%2232%22 x2=%2254%22 y2=%2232%22/><line x1=%2284%22 y1=%2218%22 x2=%2288%22 y2=%2214%22/><line x1=%2256%22 y1=%2218%22 x2=%2252%22 y2=%2214%22/></g><ellipse cx=%2225%22 cy=%2228%22 rx=%2213%22 ry=%225%22 fill=%22%23fff%22/><ellipse cx=%2220%22 cy=%2232%22 rx=%228%22 ry=%224%22 fill=%22%23fff%22/><line x1=%2250%22 y1=%2270%22 x2=%2220%22 y2=%22100%22 stroke=%22%23166534%22 stroke-width=%221%22 opacity=%220.5%22/><line x1=%2250%22 y1=%2270%22 x2=%2250%22 y2=%22100%22 stroke=%22%23166534%22 stroke-width=%221%22 opacity=%220.5%22/><line x1=%2250%22 y1=%2270%22 x2=%2280%22 y2=%22100%22 stroke=%22%23166534%22 stroke-width=%221%22 opacity=%220.5%22/></svg>">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1022,7 +1022,7 @@
             messagingSenderId: "90552560075",
             appId: "1:90552560075:web:e23a642cfe55778123ee4e"
         };
-        const appId = 'wnext-ag-v41-weathernextforraub'; // COMPANY BUILD: per-company cloud-sync namespace.
+        const appId = 'wnext-ag-v41-weathernextforjohor'; // COMPANY BUILD: per-company cloud-sync namespace.
         
         // ============================================================
         // APP_BRANDING — runtime personalization (was static config)
@@ -1054,10 +1054,10 @@
         //   WNEXT_LAUNCH_COUNT         — integer, counts launches for nudge logic
         // ============================================================
         const WNEXT_STORAGE_KEYS = {
-            userName:        'weathernextforraub__WNEXT_USER_NAME',
-            userNameAscii:   'weathernextforraub__WNEXT_USER_NAME_ASCII',
-            hasSeenOnboard:  'weathernextforraub__WNEXT_HAS_SEEN_ONBOARDING',
-            launchCount:     'weathernextforraub__WNEXT_LAUNCH_COUNT'
+            userName:        'weathernextforjohor__WNEXT_USER_NAME',
+            userNameAscii:   'weathernextforjohor__WNEXT_USER_NAME_ASCII',
+            hasSeenOnboard:  'weathernextforjohor__WNEXT_HAS_SEEN_ONBOARDING',
+            launchCount:     'weathernextforjohor__WNEXT_LAUNCH_COUNT'
         };
         
         // Read raw user name from localStorage. Returns null if not set.
@@ -1570,14 +1570,14 @@
         // existing custom-key users are unaffected.
         // ============================================================
         const DEFAULT_API_KEY = ''; // COMPANY BUILD: no embedded key — user supplies their own Gemini key via the in-app API Key modal (stored in localStorage). Keeps the key out of the public repo.
-        let apiKey = localStorage.getItem('weathernextforraub__wnext_v41_api_key') || DEFAULT_API_KEY;
+        let apiKey = localStorage.getItem('weathernextforjohor__wnext_v41_api_key') || DEFAULT_API_KEY;
 
-        const WEATHER_CACHE_KEY = `weathernextforraub__wnext_v41_weather_store`;
-        const FAV_CACHE_KEY = `weathernextforraub__wnext_v41_favs_store`;
-        const HIDDEN_CACHE_KEY = `weathernextforraub__wnext_v41_hidden_store`;
-        const RENAME_CACHE_KEY = `weathernextforraub__wnext_v41_rename_store`;
-        const CUSTOM_CACHE_KEY = `weathernextforraub__wnext_v41_custom_store`;
-        const PURGED_CACHE_KEY = `weathernextforraub__wnext_v41_purged_store`; // NEW
+        const WEATHER_CACHE_KEY = `weathernextforjohor__wnext_v41_weather_store`;
+        const FAV_CACHE_KEY = `weathernextforjohor__wnext_v41_favs_store`;
+        const HIDDEN_CACHE_KEY = `weathernextforjohor__wnext_v41_hidden_store`;
+        const RENAME_CACHE_KEY = `weathernextforjohor__wnext_v41_rename_store`;
+        const CUSTOM_CACHE_KEY = `weathernextforjohor__wnext_v41_custom_store`;
+        const PURGED_CACHE_KEY = `weathernextforjohor__wnext_v41_purged_store`; // NEW
         // Detail forecast cache — stores the per-location hourly forecast payload so that
         // tapping a location feels instant when the data is fresh. Keyed by `id__model` so
         // switching weather models (ECMWF / Best Match) doesn't return stale model data.
@@ -1585,11 +1585,11 @@
         // TTL is 1 hour: weather forecasts are updated by Open-Meteo a few times per day, but
         // hourly resolution is fine enough that an hour-old cached forecast is still useful.
         // We use stale-while-revalidate: show cached data immediately, then refresh in bg.
-        const DETAIL_CACHE_KEY = `weathernextforraub__wnext_v41_detail_store`;
+        const DETAIL_CACHE_KEY = `weathernextforjohor__wnext_v41_detail_store`;
         const DETAIL_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
-        const PREF_MODEL_KEY = `weathernextforraub__wnext_v41_pref_model_store`;
-        const PREF_CROPS_KEY = `weathernextforraub__wnext_v41_pref_crops_store`;
-        const PREF_AI_KEY = `weathernextforraub__wnext_v41_ai_pref_map_v2`;
+        const PREF_MODEL_KEY = `weathernextforjohor__wnext_v41_pref_model_store`;
+        const PREF_CROPS_KEY = `weathernextforjohor__wnext_v41_pref_crops_store`;
+        const PREF_AI_KEY = `weathernextforjohor__wnext_v41_ai_pref_map_v2`;
 
         const AI_LABELS = ["", "English Briefing", "中文 农事简报", "Bahasa Ringkasan", "தமிழ் சுருக்கம்", "မြန်မာ အကျဉ်းချုပ်"];
         let locationAiLangs = {}; 
@@ -1750,7 +1750,7 @@
             const newKey = input.value.trim();
             if (newKey) {
                 apiKey = newKey;
-                safeSet('weathernextforraub__wnext_v41_api_key', newKey);
+                safeSet('weathernextforjohor__wnext_v41_api_key', newKey);
                 document.getElementById('api-key-modal').classList.add('hidden');
                 if (apiKeyResolve) { apiKeyResolve(newKey); apiKeyResolve = null; }
             } else {
@@ -1771,7 +1771,7 @@
             //   3. The embedded shared default key
             // The third tier ensures fresh deep-link receivers can use AI
             // features without any setup step.
-            let key = apiKey || localStorage.getItem('weathernextforraub__wnext_v41_api_key') || DEFAULT_API_KEY;
+            let key = apiKey || localStorage.getItem('weathernextforjohor__wnext_v41_api_key') || DEFAULT_API_KEY;
             // No key configured yet (Option B build: no embedded default) — ask the
             // user for one up front rather than firing a request guaranteed to 403.
             if (!key) {
@@ -1885,25 +1885,25 @@
         // ============================================================
         // COMPANY BUILD — first-run seed (company name + farms)
         // ------------------------------------------------------------
-        // Company : Raub
-        // Built   : 2026-05-24 06:30  (seed v3 — CT Tan plots renamed 1/2)
+        // Company : Johor
+        // Built   : 2026-05-23 01:38
         // On the VERY FIRST launch this seeds:
         //   - the company display name (so the app shows it with no
         //     onboarding prompt — but it stays editable via Edit Name)
-        //   - 15 company farm(s) into customLocations
+        //   - 5 company farm(s) into customLocations
         // After that the user has full control: rename, edit, delete
         // (soft + permanent), add new farms, receive shared locations —
         // exactly like the generic build. The seed never runs again
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '3';
-            var SEED_FLAG_KEY = 'weathernextforraub__wnext_company_seed_version';
-            var CUSTOM_KEY = 'weathernextforraub__wnext_v41_custom_store';
-            var FAV_KEY = 'weathernextforraub__wnext_v41_favs_store';
-            var RENAME_KEY = 'weathernextforraub__wnext_v41_rename_store';
-            var NAME_KEY = 'weathernextforraub__WNEXT_USER_NAME';
-            var NAME_ASCII_KEY = 'weathernextforraub__WNEXT_USER_NAME_ASCII';
+            var SEED_VERSION = '4';
+            var SEED_FLAG_KEY = 'weathernextforjohor__wnext_company_seed_version';
+            var CUSTOM_KEY = 'weathernextforjohor__wnext_v41_custom_store';
+            var FAV_KEY = 'weathernextforjohor__wnext_v41_favs_store';
+            var RENAME_KEY = 'weathernextforjohor__wnext_v41_rename_store';
+            var NAME_KEY = 'weathernextforjohor__WNEXT_USER_NAME';
+            var NAME_ASCII_KEY = 'weathernextforjohor__WNEXT_USER_NAME_ASCII';
             try {
                 if (localStorage.getItem(SEED_FLAG_KEY) === SEED_VERSION) {
                     return; // already seeded this version — respect user edits/deletes
@@ -1913,10 +1913,16 @@
                 // so we store ONLY the bare name here. Seeded only if the user
                 // hasn't already set their own name (respect prior edits).
                 if (!localStorage.getItem(NAME_KEY)) {
-                    localStorage.setItem(NAME_KEY, "Raub");
-                    localStorage.setItem(NAME_ASCII_KEY, "Raub");
+                    localStorage.setItem(NAME_KEY, "Austin");
+                    localStorage.setItem(NAME_ASCII_KEY, "Austin");
                 }
-                var seedLocs = [{"id": "c_rb-sg-ruan-fang-goo", "en": "Sg. Ruan (Fang Goo)", "zh": "双溪兰 晓方", "lat": 3.77883, "lng": 101.94133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-fang-goo", "en": "Sg. Klau - Fang Goo", "zh": "双溪吉流 - 晓方", "lat": 3.71967, "lng": 102.01033, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-a", "en": "Sg. Klau 1 - CT Tan", "zh": "双溪吉流 1 - CT Tan", "lat": 3.717, "lng": 102.0055, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-neng", "en": "Kg. Sg. Ruan - Neng", "zh": "双溪兰 - 能", "lat": 3.79361, "lng": 101.93472, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-jerry", "en": "Kg. Sg. Ruan - Jerry Phoon", "zh": "双溪兰新村 - Jerry Phoon", "lat": 3.79194, "lng": 101.94278, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-kwong-seng", "en": "Sg. Klau - Kwong Seng", "zh": "双溪吉流 - Kwong Seng", "lat": 3.74833, "lng": 101.95133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-b", "en": "Sg. Klau 2 - CT Tan", "zh": "双溪吉流 2 - CT Tan", "lat": 3.74417, "lng": 101.96917, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-thompson", "en": "Kg. Sg. Klau - Thompson", "zh": "双溪吉流新村 - Thompson", "lat": 3.7475, "lng": 101.97694, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-soon", "en": "Kg. Sg. Klau - Soon", "zh": "双溪吉流新村 - 顺", "lat": 3.78392, "lng": 101.98063, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-eric", "en": "Kampung Temau - Eric", "zh": "甘榜特茂 Eric", "lat": 3.929, "lng": 101.921, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-mk", "en": "Kampung Temau - MK", "zh": "甘榜特茂 - MK", "lat": 3.91778, "lng": 101.91944, "t": 0, "p": 0, "em": false}, {"id": "c_rb-ulu-gali", "en": "Ulu Gali", "zh": "乌鲁加里", "lat": 3.84478, "lng": 101.95747, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-gali", "en": "Kg. Gali", "zh": "甘榜加里", "lat": 3.83333, "lng": 101.9, "t": 0, "p": 0, "em": false}, {"id": "c_rb-jerkoh", "en": "Jerkoh", "zh": "日利谷", "lat": 4.04861, "lng": 101.92028, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sjkc-cheroh", "en": "SJKC Cheroh", "zh": "积罗国民型华文学校", "lat": 3.902932175182664, "lng": 101.81499109316061, "t": 0, "p": 0, "em": false}];
+                var seedLocs = [
+                    {"id": "c_jh-labis-austin-1", "en": "Labis (Austin 1)", "zh": "拉美士 1", "lat": 2.41750, "lng": 103.04444, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-labis-austin-2", "en": "Labis (Austin 2)", "zh": "拉美士 2", "lat": 2.42806, "lng": 103.03639, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-segamat-buloh-kasap", "en": "Segamat Buloh Kasap", "zh": "昔加末 巫罗加什", "lat": 2.527677, "lng": 102.772178, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-chaah-baru", "en": "Chaah Baru", "zh": "三合港", "lat": 2.148561, "lng": 103.052319, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-bekok", "en": "Bekok", "zh": "彼咯", "lat": 2.305833, "lng": 103.091389, "t": 0, "p": 0, "em": false}
+                ];
                 // Merge into whatever is already there (e.g. a deep-link
                 // location the user received before first cold start).
                 var existing = [];
@@ -1931,62 +1937,39 @@
                     if (!haveIds[l.id]) existing.push(l);
                 });
                 localStorage.setItem(CUSTOM_KEY, JSON.stringify(existing));
-                // --- SEED name migration ----------------------------------
-                // The merge above only ADDS missing farms — it never renames
-                // a farm that already exists on the device. So when a farm's
-                // auto-seeded name changes between SEED_VERSIONs, we rewrite it
-                // here explicitly.
-                //
-                // SEED v3: the two CT Tan plots in Sg. Klau originally shipped
-                // (v2) both labelled "Sg. Klau - CT Tan", which made them
-                // indistinguishable. v3 renames them to "Sg. Klau 1 / 2".
-                //
-                // SAFETY: a farm is only renamed if it STILL holds a known old
-                // auto-seeded name. If the user changed it themselves via Edit
-                // Name, their choice is left untouched.
+                // --- SEED v4 name migration -------------------------------
+                // Bekok originally shipped (seed v3) with the Chinese name
+                // "美谷". The correct name is "彼咯". Devices that already ran
+                // seed v3 have the wrong name saved in the custom store, and
+                // bumping the version alone won't replace it (the merge above
+                // only ADDS missing farms). So here we explicitly rewrite the
+                // seeded farm's Chinese name — but ONLY when it still equals
+                // the known wrong auto-seeded value, so a user's own Edit
+                // Name choice is never overwritten.
                 try {
-                    // id -> { from: [old auto-seeded names], en, zh }
-                    var RENAMES = {
-                        'c_rb-sg-klau-ct-tan-a': {
-                            from: ['Sg. Klau - CT Tan'],
-                            fromZh: ['双溪吉流 - CT Tan'],
-                            en: 'Sg. Klau 1 - CT Tan',
-                            zh: '双溪吉流 1 - CT Tan'
-                        },
-                        'c_rb-sg-klau-ct-tan-b': {
-                            from: ['Sg. Klau - CT Tan'],
-                            fromZh: ['双溪吉流 - CT Tan'],
-                            en: 'Sg. Klau 2 - CT Tan',
-                            zh: '双溪吉流 2 - CT Tan'
-                        }
-                    };
-                    // 1) rewrite names in the custom store
-                    var custMig = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]');
+                    var BEKOK_ID = "c_jh-bekok";
+                    var BEKOK_OLD_ZH = ["美谷"];
+                    var BEKOK_NEW_ZH = "彼咯";
+                    var custMig = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
                     if (Array.isArray(custMig)) {
-                        var custChanged = false;
+                        var migrated = false;
                         custMig.forEach(function (l) {
-                            if (!l || !l.id || !RENAMES[l.id]) return;
-                            var r = RENAMES[l.id];
-                            if (r.from.indexOf(l.en) !== -1) { l.en = r.en; custChanged = true; }
-                            if (r.fromZh.indexOf(l.zh) !== -1) { l.zh = r.zh; custChanged = true; }
+                            if (l && l.id === BEKOK_ID && BEKOK_OLD_ZH.indexOf(l.zh) !== -1) {
+                                l.zh = BEKOK_NEW_ZH; migrated = true;
+                            }
                         });
-                        if (custChanged) localStorage.setItem(CUSTOM_KEY, JSON.stringify(custMig));
+                        if (migrated) localStorage.setItem(CUSTOM_KEY, JSON.stringify(custMig));
                     }
-                    // 2) rewrite names in the rename-override store (this store
-                    //    wins over the custom store when the app renders names)
-                    var renMig = JSON.parse(localStorage.getItem(RENAME_KEY) || '{}');
-                    if (renMig && typeof renMig === 'object') {
-                        var renChanged = false;
-                        Object.keys(RENAMES).forEach(function (id) {
-                            var r = RENAMES[id];
-                            var entry = renMig[id];
-                            if (!entry) return;
-                            if (entry.en && r.from.indexOf(entry.en) !== -1) { entry.en = r.en; renChanged = true; }
-                            if (entry.zh && r.fromZh.indexOf(entry.zh) !== -1) { entry.zh = r.zh; renChanged = true; }
-                        });
-                        if (renChanged) localStorage.setItem(RENAME_KEY, JSON.stringify(renMig));
+                    // Also fix a stale rename-store entry if it still holds the
+                    // old auto-seeded name (the rename store overrides the
+                    // custom store when the app renders names).
+                    var renMig = JSON.parse(localStorage.getItem(RENAME_KEY) || "{}");
+                    if (renMig && renMig[BEKOK_ID] &&
+                        BEKOK_OLD_ZH.indexOf(renMig[BEKOK_ID].zh) !== -1) {
+                        renMig[BEKOK_ID].zh = BEKOK_NEW_ZH;
+                        localStorage.setItem(RENAME_KEY, JSON.stringify(renMig));
                     }
-                } catch (e) { console.warn('[company-seed] name migration skipped', e); }
+                } catch (e) { console.warn('[company-seed] Bekok name migration skipped', e); }
                 // ----------------------------------------------------------
                 // Auto-favourite the seeded farms so they pin to the top on
                 // first launch (matches the app's behaviour for user-added
@@ -1997,7 +1980,7 @@
                     favs = rawF ? (JSON.parse(rawF) || []) : [];
                     if (!Array.isArray(favs)) favs = [];
                 } catch (e) { favs = []; }
-                var seedIds = ["c_rb-sg-ruan-fang-goo", "c_rb-sg-klau-fang-goo", "c_rb-sg-klau-ct-tan-a", "c_rb-kg-sg-ruan-neng", "c_rb-kg-sg-ruan-jerry", "c_rb-sg-klau-kwong-seng", "c_rb-sg-klau-ct-tan-b", "c_rb-kg-sg-klau-thompson", "c_rb-kg-sg-klau-soon", "c_rb-kg-temau-eric", "c_rb-kg-temau-mk", "c_rb-ulu-gali", "c_rb-kg-gali", "c_rb-jerkoh", "c_rb-sjkc-cheroh"];
+                var seedIds = ["c_jh-labis-austin-1", "c_jh-labis-austin-2", "c_jh-segamat-buloh-kasap", "c_jh-chaah-baru", "c_jh-bekok"];
                 seedIds.forEach(function (id) {
                     if (favs.indexOf(id) === -1) favs.push(id);
                 });
@@ -7598,13 +7581,10 @@
       <div class="pwa-icon">
         <svg width="22" height="22" viewBox="0 0 100 100">
           <rect width="100" height="100" rx="22" fill="#7dd3fc"/>
-          <circle cx="78" cy="26" r="10" fill="#fbbf24"/>
-          <ellipse cx="24" cy="24" rx="13" ry="5" fill="#fff"/>
-          <path d="M-5 72 L40 22 L72 72 Z" fill="#5b8c5a"/>
-          <path d="M28 78 L60 14 L94 78 Z" fill="#3f7d3f"/>
-          <path d="M60 14 L94 78 L60 78 Z" fill="#2f5f2f"/>
-          <path d="M60 14 L52 31 L57 33 L60 27 L62 32 Z" fill="#5aa45a" opacity="0.85"/>
-          <path d="M0 74 Q50 64 100 74 L100 100 L0 100 Z" fill="#4f9e35"/>
+          <path d="M0 55 L100 55 L100 100 L0 100 Z" fill="#22c55e"/>
+          <path d="M0 70 L100 70 L100 100 L0 100 Z" fill="#15803d"/>
+          <circle cx="70" cy="32" r="13" fill="#fbbf24"/>
+          <ellipse cx="25" cy="28" rx="13" ry="5" fill="#fff"/>
         </svg>
       </div>
       <div class="pwa-text">
