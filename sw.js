@@ -3,7 +3,7 @@
 // Version 1.0.0 — bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202605240000';
+const CACHE_VERSION = 'wnext-weathernextforraub-202605240630';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
@@ -87,18 +87,20 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('firebaseio.com') ||
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('firebase') ||
-    url.hostname.includes('gstatic.com') && url.pathname.includes('firebasejs')
+    (url.hostname.includes('gstatic.com') && url.pathname.includes('firebasejs'))
   ) {
-    // Network-only, but allow graceful failure
-    event.respondWith(
-      fetch(request).catch(() => {
-        return new Response(
-          JSON.stringify({ error: 'offline', message: 'Network unavailable' }),
-          { status: 503, headers: { 'Content-Type': 'application/json' } }
-        );
-      })
-    );
-    return;
+    // IMPORTANT: do NOT substitute a JSON body on failure here.
+    // These requests include the Firebase SDK *JavaScript modules*
+    // (gstatic.com/firebasejs/...). If a fetch fails and the SW hands
+    // back a JSON 503, the browser tries to execute JSON as an ES module,
+    // which throws and kills the entire type="module" script — producing
+    // a fully blank page. Instead we just pass the request straight to
+    // the network. A genuine network error is then a normal failed
+    // request that the app's own try/catch around Firebase can handle,
+    // and — critically — a failed *script* request no longer poisons
+    // module execution. (For data/XHR requests to these hosts the app
+    // already handles rejected fetches gracefully.)
+    return; // no respondWith — browser performs the fetch natively
   }
 
   // 2. Open-Meteo weather API — network-first with cache fallback (stale weather > no weather)
