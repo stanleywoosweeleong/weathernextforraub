@@ -1948,7 +1948,7 @@
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '3';
+            var SEED_VERSION = '4';
             var SEED_FLAG_KEY = 'weathernextforraub__wnext_company_seed_version';
             var CUSTOM_KEY = 'weathernextforraub__wnext_v41_custom_store';
             var FAV_KEY = 'weathernextforraub__wnext_v41_favs_store';
@@ -1967,7 +1967,7 @@
                     localStorage.setItem(NAME_KEY, "Raub");
                     localStorage.setItem(NAME_ASCII_KEY, "Raub");
                 }
-                var seedLocs = [{"id": "c_rb-sg-ruan-fang-goo", "en": "Sg. Ruan (Fang Goo)", "zh": "双溪兰 晓方", "lat": 3.77883, "lng": 101.94133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-fang-goo", "en": "Sg. Klau - Fang Goo", "zh": "双溪吉流 - 晓方", "lat": 3.71967, "lng": 102.01033, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-a", "en": "Sg. Klau 1 - CT Tan", "zh": "双溪吉流 1 - CT Tan", "lat": 3.717, "lng": 102.0055, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-neng", "en": "Kg. Sg. Ruan - Neng", "zh": "双溪兰 - 能", "lat": 3.79361, "lng": 101.93472, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-jerry", "en": "Kg. Sg. Ruan - Jerry Phoon", "zh": "双溪兰新村 - Jerry Phoon", "lat": 3.79194, "lng": 101.94278, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-kwong-seng", "en": "Sg. Klau - Kwong Seng", "zh": "双溪吉流 - Kwong Seng", "lat": 3.74833, "lng": 101.95133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-b", "en": "Sg. Klau 2 - CT Tan", "zh": "双溪吉流 2 - CT Tan", "lat": 3.74417, "lng": 101.96917, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-thompson", "en": "Kg. Sg. Klau - Thompson", "zh": "双溪吉流新村 - Thompson", "lat": 3.7475, "lng": 101.97694, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-soon", "en": "Kg. Sg. Klau - Soon", "zh": "双溪吉流新村 - 顺", "lat": 3.78392, "lng": 101.98063, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-eric", "en": "Kampung Temau - Eric", "zh": "甘榜特茂 Eric", "lat": 3.929, "lng": 101.921, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-mk", "en": "Kampung Temau - MK", "zh": "甘榜特茂 - MK", "lat": 3.91778, "lng": 101.91944, "t": 0, "p": 0, "em": false}, {"id": "c_rb-ulu-gali", "en": "Ulu Gali", "zh": "乌鲁加里", "lat": 3.84478, "lng": 101.95747, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-gali", "en": "Kg. Gali", "zh": "甘榜加里", "lat": 3.83333, "lng": 101.9, "t": 0, "p": 0, "em": false}, {"id": "c_rb-jerkoh", "en": "Jerkoh", "zh": "日利谷", "lat": 4.04861, "lng": 101.92028, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sjkc-cheroh", "en": "SJKC Cheroh", "zh": "积罗国民型华文学校", "lat": 3.902932175182664, "lng": 101.81499109316061, "t": 0, "p": 0, "em": false}];
+                var seedLocs = [{"id": "c_rb-sg-ruan-fang-goo", "en": "Sg. Ruan - Fang Goo", "zh": "双溪兰 - 晓方", "lat": 3.77883, "lng": 101.94133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-fang-goo", "en": "Sg. Klau - Fang Goo", "zh": "双溪吉流 - 晓方", "lat": 3.71967, "lng": 102.01033, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-a", "en": "Sg. Klau 1 - CT Tan", "zh": "双溪吉流 1 - CT Tan", "lat": 3.717, "lng": 102.0055, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-neng", "en": "Kg. Sg. Ruan - Neng", "zh": "双溪兰 - 能", "lat": 3.79361, "lng": 101.93472, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-jerry", "en": "Kg. Sg. Ruan - Jerry Phoon", "zh": "双溪兰新村 - Jerry Phoon", "lat": 3.79194, "lng": 101.94278, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-kwong-seng", "en": "Sg. Klau - Kwong Seng", "zh": "双溪吉流 - Kwong Seng", "lat": 3.74833, "lng": 101.95133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-b", "en": "Sg. Klau 2 - CT Tan", "zh": "双溪吉流 2 - CT Tan", "lat": 3.74417, "lng": 101.96917, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-thompson", "en": "Kg. Sg. Klau - Thompson", "zh": "双溪吉流新村 - Thompson", "lat": 3.7475, "lng": 101.97694, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-soon", "en": "Kg. Sg. Klau - Soon", "zh": "双溪吉流新村 - 顺", "lat": 3.78392, "lng": 101.98063, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-eric", "en": "Kampung Temau - Eric", "zh": "甘榜特茂 Eric", "lat": 3.929, "lng": 101.921, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-mk", "en": "Kampung Temau - MK", "zh": "甘榜特茂 - MK", "lat": 3.91778, "lng": 101.91944, "t": 0, "p": 0, "em": false}, {"id": "c_rb-ulu-gali", "en": "Ulu Gali", "zh": "乌鲁加里", "lat": 3.84478, "lng": 101.95747, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-gali", "en": "Kg. Gali", "zh": "甘榜加里", "lat": 3.83333, "lng": 101.9, "t": 0, "p": 0, "em": false}, {"id": "c_rb-jerkoh", "en": "Jerkoh", "zh": "日利谷", "lat": 4.04861, "lng": 101.92028, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sjkc-cheroh", "en": "SJKC Cheroh", "zh": "积罗国民型华文学校", "lat": 3.902932175182664, "lng": 101.81499109316061, "t": 0, "p": 0, "em": false}];
                 // Merge into whatever is already there (e.g. a deep-link
                 // location the user received before first cold start).
                 var existing = [];
@@ -1992,6 +1992,9 @@
                 // (v2) both labelled "Sg. Klau - CT Tan", which made them
                 // indistinguishable. v3 renames them to "Sg. Klau 1 / 2".
                 //
+                // SEED v4: "Sg. Ruan (Fang Goo)" standardised to use a hyphen
+                // ("Sg. Ruan - Fang Goo") to match every other farm's naming.
+                //
                 // SAFETY: a farm is only renamed if it STILL holds a known old
                 // auto-seeded name. If the user changed it themselves via Edit
                 // Name, their choice is left untouched.
@@ -2009,6 +2012,12 @@
                             fromZh: ['双溪吉流 - CT Tan'],
                             en: 'Sg. Klau 2 - CT Tan',
                             zh: '双溪吉流 2 - CT Tan'
+                        },
+                        'c_rb-sg-ruan-fang-goo': {
+                            from: ['Sg. Ruan (Fang Goo)'],
+                            fromZh: ['双溪兰 晓方'],
+                            en: 'Sg. Ruan - Fang Goo',
+                            zh: '双溪兰 - 晓方'
                         }
                     };
                     // 1) rewrite names in the custom store

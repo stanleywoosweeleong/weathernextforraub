@@ -29,7 +29,7 @@ farms as you like from inside the app.
 
 | English | 中文 | Coordinates |
 |---|---|---|
-| Sg. Ruan (Fang Goo) | 双溪兰 晓方 | 3.77883, 101.94133 |
+| Sg. Ruan - Fang Goo | 双溪兰 - 晓方 | 3.77883, 101.94133 |
 | Sg. Klau - Fang Goo | 双溪吉流 - 晓方 | 3.71967, 102.01033 |
 | Sg. Klau 1 - CT Tan | 双溪吉流 1 - CT Tan | 3.71700, 102.00550 |
 | Kg. Sg. Ruan - Neng | 双溪兰 - 能 | 3.79361, 101.93472 |
@@ -52,10 +52,11 @@ so they are easy to tell apart in the app.
 The app also seeds a default user display name (**Raub**), which stays editable
 via **Edit Name** in the app.
 
-*Seed v3:* the two CT Tan plots were renamed from a shared label to
-**Sg. Klau 1 / 2 - CT Tan**. Existing installs pick this up automatically on
-their next visit — no need to clear data — and any farm a user renamed
-themselves is left untouched.
+*Seed v3 / v4:* the two CT Tan plots were renamed from a shared label to
+**Sg. Klau 1 / 2 - CT Tan**, and **Sg. Ruan - Fang Goo** was standardised to
+use a hyphen. Existing installs pick these up automatically on their next
+visit — no need to clear data — and any farm a user renamed themselves is
+left untouched.
 
 ---
 
