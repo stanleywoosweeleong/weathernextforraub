@@ -1948,7 +1948,7 @@
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '4';
+            var SEED_VERSION = '6';
             var SEED_FLAG_KEY = 'weathernextforraub__wnext_company_seed_version';
             var CUSTOM_KEY = 'weathernextforraub__wnext_v41_custom_store';
             var FAV_KEY = 'weathernextforraub__wnext_v41_favs_store';
@@ -1967,7 +1967,7 @@
                     localStorage.setItem(NAME_KEY, "Raub");
                     localStorage.setItem(NAME_ASCII_KEY, "Raub");
                 }
-                var seedLocs = [{"id": "c_rb-sg-ruan-fang-goo", "en": "Sg. Ruan - Fang Goo", "zh": "双溪兰 - 晓方", "lat": 3.77883, "lng": 101.94133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-fang-goo", "en": "Sg. Klau - Fang Goo", "zh": "双溪吉流 - 晓方", "lat": 3.71967, "lng": 102.01033, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-a", "en": "Sg. Klau 1 - CT Tan", "zh": "双溪吉流 1 - CT Tan", "lat": 3.717, "lng": 102.0055, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-neng", "en": "Kg. Sg. Ruan - Neng", "zh": "双溪兰 - 能", "lat": 3.79361, "lng": 101.93472, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-jerry", "en": "Kg. Sg. Ruan - Jerry Phoon", "zh": "双溪兰新村 - Jerry Phoon", "lat": 3.79194, "lng": 101.94278, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-kwong-seng", "en": "Sg. Klau - Kwong Seng", "zh": "双溪吉流 - Kwong Seng", "lat": 3.74833, "lng": 101.95133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-b", "en": "Sg. Klau 2 - CT Tan", "zh": "双溪吉流 2 - CT Tan", "lat": 3.74417, "lng": 101.96917, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-thompson", "en": "Kg. Sg. Klau - Thompson", "zh": "双溪吉流新村 - Thompson", "lat": 3.7475, "lng": 101.97694, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-soon", "en": "Kg. Sg. Klau - Soon", "zh": "双溪吉流新村 - 顺", "lat": 3.78392, "lng": 101.98063, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-eric", "en": "Kampung Temau - Eric", "zh": "甘榜特茂 Eric", "lat": 3.929, "lng": 101.921, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-mk", "en": "Kampung Temau - MK", "zh": "甘榜特茂 - MK", "lat": 3.91778, "lng": 101.91944, "t": 0, "p": 0, "em": false}, {"id": "c_rb-ulu-gali", "en": "Ulu Gali", "zh": "乌鲁加里", "lat": 3.84478, "lng": 101.95747, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-gali", "en": "Kg. Gali", "zh": "甘榜加里", "lat": 3.83333, "lng": 101.9, "t": 0, "p": 0, "em": false}, {"id": "c_rb-jerkoh", "en": "Jerkoh", "zh": "日利谷", "lat": 4.04861, "lng": 101.92028, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sjkc-cheroh", "en": "SJKC Cheroh", "zh": "积罗国民型华文学校", "lat": 3.902932175182664, "lng": 101.81499109316061, "t": 0, "p": 0, "em": false}];
+                var seedLocs = [{"id": "c_rb-sg-ruan-fang-goo", "en": "Sg. Ruan - Fang Goo", "zh": "双溪兰 - 晓方", "lat": 3.77883, "lng": 101.94133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-fang-goo", "en": "Sg. Klau - Fang Goo", "zh": "双溪吉流 - 晓方", "lat": 3.71967, "lng": 102.01033, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-a", "en": "Sg. Klau 1 - CT Tan", "zh": "双溪吉流 1 - CT Tan", "lat": 3.717, "lng": 102.0055, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-neng", "en": "Kg. Sg. Ruan - Neng", "zh": "双溪兰 - 能", "lat": 3.79361, "lng": 101.93472, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-ruan-jerry", "en": "Kg. Sg. Ruan - Jerry Phoon", "zh": "双溪兰新村 - Jerry Phoon", "lat": 3.79194, "lng": 101.94278, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-kwong-seng", "en": "Sg. Klau - Kwong Seng", "zh": "双溪吉流 - Kwong Seng", "lat": 3.74833, "lng": 101.95133, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sg-klau-ct-tan-b", "en": "Sg. Klau 2 - CT Tan", "zh": "双溪吉流 2 - CT Tan", "lat": 3.74417, "lng": 101.96917, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-thompson", "en": "Kg. Sg. Klau - Thompson", "zh": "双溪吉流新村 - Thompson", "lat": 3.7475, "lng": 101.97694, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-sg-klau-soon", "en": "Kg. Sg. Klau - Soon", "zh": "双溪吉流新村 - 顺", "lat": 3.78392, "lng": 101.98063, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-eric", "en": "Kampung Temau - Eric", "zh": "甘榜德茂 - Eric", "lat": 3.929, "lng": 101.921, "t": 0, "p": 0, "em": false}, {"id": "c_rb-ulu-gali", "en": "Ulu Gali", "zh": "乌鲁加里", "lat": 3.84478, "lng": 101.95747, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-gali", "en": "Kg. Gali", "zh": "甘榜加里", "lat": 3.83333, "lng": 101.9, "t": 0, "p": 0, "em": false}, {"id": "c_rb-jerkoh", "en": "Jerkoh", "zh": "日利谷", "lat": 4.04861, "lng": 101.92028, "t": 0, "p": 0, "em": false}, {"id": "c_rb-sjkc-cheroh", "en": "SJKC Cheroh", "zh": "积罗国民型华文学校", "lat": 3.902932175182664, "lng": 101.81499109316061, "t": 0, "p": 0, "em": false}, {"id": "c_rb-kg-temau-mk", "en": "Kampung Temau - MK", "zh": "甘榜德茂 - MK", "lat": 3.917778, "lng": 101.919444, "t": 0, "p": 0, "em": false}, {"id": "c_rb-dong-hongzong", "en": "Dong - Hong", "zh": "东区 - 鸿总", "lat": 4.090556, "lng": 101.966111, "t": 0, "p": 0, "em": false}];
                 // Merge into whatever is already there (e.g. a deep-link
                 // location the user received before first cold start).
                 var existing = [];
@@ -1995,6 +1995,17 @@
                 // SEED v4: "Sg. Ruan (Fang Goo)" standardised to use a hyphen
                 // ("Sg. Ruan - Fang Goo") to match every other farm's naming.
                 //
+                // SEED v5: "Kampung Temau - Eric" Chinese name standardised to
+                // use a hyphen ("甘榜特茂 - Eric"). "Kampung Temau - MK" was
+                // removed from the seed.
+                //
+                // SEED v6: two farms added (Kampung Temau - MK re-added,
+                // Dong - Hong). The Temau village name standardised to 德茂
+                // across all farms, so "Kampung Temau - Eric" is renamed
+                // 甘榜特茂 → 甘榜德茂. NOTE: the v5 removal entry for
+                // Kampung Temau - MK has been retired from SEED_REMOVALS,
+                // since v6 re-seeds that farm.
+                //
                 // SAFETY: a farm is only renamed if it STILL holds a known old
                 // auto-seeded name. If the user changed it themselves via Edit
                 // Name, their choice is left untouched.
@@ -2018,6 +2029,12 @@
                             fromZh: ['双溪兰 晓方'],
                             en: 'Sg. Ruan - Fang Goo',
                             zh: '双溪兰 - 晓方'
+                        },
+                        'c_rb-kg-temau-eric': {
+                            from: ['Kampung Temau - Eric'],
+                            fromZh: ['甘榜特茂 Eric', '甘榜特茂 - Eric'],
+                            en: 'Kampung Temau - Eric',
+                            zh: '甘榜德茂 - Eric'
                         }
                     };
                     // 1) rewrite names in the custom store
@@ -2046,6 +2063,54 @@
                         });
                         if (renChanged) localStorage.setItem(RENAME_KEY, JSON.stringify(renMig));
                     }
+                    // 3) SEED removals — farms dropped from the company seed.
+                    //    The merge step only ADDS farms, so a farm removed from
+                    //    the seed array still lingers on devices that already
+                    //    seeded it. Remove it here — but ONLY if it is still the
+                    //    untouched seeded farm. If the user renamed it or moved
+                    //    its coordinates, it has become THEIR farm: leave it.
+                    // SEED_REMOVALS: farms dropped from the company seed.
+                    // Currently empty — the v5 removal of "Kampung Temau - MK"
+                    // was retired in v6, which re-seeds that farm. Leave this
+                    // map in place (empty) so future removals have a home.
+                    var SEED_REMOVALS = {};
+                    var removeIds = [];
+                    var custForRemoval = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]');
+                    if (Array.isArray(custForRemoval)) {
+                        var renForCheck = {};
+                        try { renForCheck = JSON.parse(localStorage.getItem(RENAME_KEY) || '{}') || {}; } catch (e) { renForCheck = {}; }
+                        var keptCust = custForRemoval.filter(function (l) {
+                            if (!l || !l.id || !SEED_REMOVALS[l.id]) return true; // keep
+                            var s = SEED_REMOVALS[l.id];
+                            // user renamed it via the override store? -> keep, it's theirs
+                            if (renForCheck[l.id]) return true;
+                            // name changed in the custom store? -> keep
+                            if (l.en !== s.en || l.zh !== s.zh) return true;
+                            // coordinates moved? -> keep
+                            if (Math.abs((l.lat || 0) - s.lat) > 0.0001 ||
+                                Math.abs((l.lng || 0) - s.lng) > 0.0001) return true;
+                            // untouched seeded farm -> safe to remove
+                            removeIds.push(l.id);
+                            return false;
+                        });
+                        if (removeIds.length) {
+                            localStorage.setItem(CUSTOM_KEY, JSON.stringify(keptCust));
+                            // also drop from favourites and the rename store
+                            try {
+                                var favClean = JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+                                if (Array.isArray(favClean)) {
+                                    var favKept = favClean.filter(function (id) { return removeIds.indexOf(id) === -1; });
+                                    if (favKept.length !== favClean.length) localStorage.setItem(FAV_KEY, JSON.stringify(favKept));
+                                }
+                            } catch (e) { /* favourites untouched on parse error */ }
+                            try {
+                                var renClean = JSON.parse(localStorage.getItem(RENAME_KEY) || '{}');
+                                var renTouched = false;
+                                removeIds.forEach(function (id) { if (renClean[id]) { delete renClean[id]; renTouched = true; } });
+                                if (renTouched) localStorage.setItem(RENAME_KEY, JSON.stringify(renClean));
+                            } catch (e) { /* rename store untouched on parse error */ }
+                        }
+                    }
                 } catch (e) { console.warn('[company-seed] name migration skipped', e); }
                 // ----------------------------------------------------------
                 // Auto-favourite the seeded farms so they pin to the top on
@@ -2057,7 +2122,7 @@
                     favs = rawF ? (JSON.parse(rawF) || []) : [];
                     if (!Array.isArray(favs)) favs = [];
                 } catch (e) { favs = []; }
-                var seedIds = ["c_rb-sg-ruan-fang-goo", "c_rb-sg-klau-fang-goo", "c_rb-sg-klau-ct-tan-a", "c_rb-kg-sg-ruan-neng", "c_rb-kg-sg-ruan-jerry", "c_rb-sg-klau-kwong-seng", "c_rb-sg-klau-ct-tan-b", "c_rb-kg-sg-klau-thompson", "c_rb-kg-sg-klau-soon", "c_rb-kg-temau-eric", "c_rb-kg-temau-mk", "c_rb-ulu-gali", "c_rb-kg-gali", "c_rb-jerkoh", "c_rb-sjkc-cheroh"];
+                var seedIds = ["c_rb-sg-ruan-fang-goo", "c_rb-sg-klau-fang-goo", "c_rb-sg-klau-ct-tan-a", "c_rb-kg-sg-ruan-neng", "c_rb-kg-sg-ruan-jerry", "c_rb-sg-klau-kwong-seng", "c_rb-sg-klau-ct-tan-b", "c_rb-kg-sg-klau-thompson", "c_rb-kg-sg-klau-soon", "c_rb-kg-temau-eric", "c_rb-ulu-gali", "c_rb-kg-gali", "c_rb-jerkoh", "c_rb-sjkc-cheroh", "c_rb-kg-temau-mk", "c_rb-dong-hongzong"];
                 seedIds.forEach(function (id) {
                     if (favs.indexOf(id) === -1) favs.push(id);
                 });

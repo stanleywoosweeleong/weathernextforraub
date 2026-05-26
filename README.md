@@ -23,7 +23,7 @@ app. It works offline after the first visit (service-worker cached).
 
 ## Seeded locations
 
-On first launch the app seeds the 15 farms below. They are all auto-favourited
+On first launch the app seeds the 16 farms below. They are all auto-favourited
 and can be renamed, edited, or deleted freely afterwards. Add as many more
 farms as you like from inside the app.
 
@@ -38,12 +38,13 @@ farms as you like from inside the app.
 | Sg. Klau 2 - CT Tan | 双溪吉流 2 - CT Tan | 3.74417, 101.96917 |
 | Kg. Sg. Klau - Thompson | 双溪吉流新村 - Thompson | 3.74750, 101.97694 |
 | Kg. Sg. Klau - Soon | 双溪吉流新村 - 顺 | 3.78392, 101.98063 |
-| Kampung Temau - Eric | 甘榜特茂 Eric | 3.92900, 101.92100 |
-| Kampung Temau - MK | 甘榜特茂 - MK | 3.91778, 101.91944 |
+| Kampung Temau - Eric | 甘榜德茂 - Eric | 3.92900, 101.92100 |
 | Ulu Gali | 乌鲁加里 | 3.84478, 101.95747 |
 | Kg. Gali | 甘榜加里 | 3.83333, 101.90000 |
 | Jerkoh | 日利谷 | 4.04861, 101.92028 |
 | SJKC Cheroh | 积罗国民型华文学校 | 3.90293, 101.81499 |
+| Kampung Temau - MK | 甘榜德茂 - MK | 3.91778, 101.91944 |
+| Dong - Hong | 东区 - 鸿总 | 4.09056, 101.96611 |
 
 Two of CT Tan's plots in Sg. Klau are distinct farms at separate
 coordinates — seeded as **Sg. Klau 1 - CT Tan** and **Sg. Klau 2 - CT Tan**
@@ -52,11 +53,15 @@ so they are easy to tell apart in the app.
 The app also seeds a default user display name (**Raub**), which stays editable
 via **Edit Name** in the app.
 
-*Seed v3 / v4:* the two CT Tan plots were renamed from a shared label to
-**Sg. Klau 1 / 2 - CT Tan**, and **Sg. Ruan - Fang Goo** was standardised to
-use a hyphen. Existing installs pick these up automatically on their next
-visit — no need to clear data — and any farm a user renamed themselves is
-left untouched.
+*Seed migrations (v3–v6):* farm names have been standardised over several
+revisions — the two CT Tan plots split into **Sg. Klau 1 / 2 - CT Tan**;
+**Sg. Ruan - Fang Goo** hyphenated; the Temau village name unified to
+**德茂** across **Kampung Temau - Eric** and **- MK**. **Kampung Temau - MK**
+was briefly removed (v5) then re-added (v6), and **Dong - Hong** was added.
+Existing installs pick all of this up automatically on their next visit —
+no need to clear data. Any farm a user renamed, moved, or otherwise
+customised themselves is left untouched (a customised farm is never
+auto-removed or auto-renamed).
 
 ---
 
