@@ -23,7 +23,7 @@ app. It works offline after the first visit (service-worker cached).
 
 ## Seeded locations
 
-On first launch the app seeds the 16 farms below. They are all auto-favourited
+On first launch the app seeds the 17 farms below. They are all auto-favourited
 and can be renamed, edited, or deleted freely afterwards. Add as many more
 farms as you like from inside the app.
 
@@ -45,6 +45,7 @@ farms as you like from inside the app.
 | SJKC Cheroh | 积罗国民型华文学校 | 3.90293, 101.81499 |
 | Kampung Temau - MK | 甘榜德茂 - MK | 3.91778, 101.91944 |
 | Dong - Hong | 东区 - 鸿总 | 4.09056, 101.96611 |
+| Ulu Gali - Jacky Kuan | 乌鲁加里 - Jacky Kuan | 3.83469, 101.91183 |
 
 Two of CT Tan's plots in Sg. Klau are distinct farms at separate
 coordinates — seeded as **Sg. Klau 1 - CT Tan** and **Sg. Klau 2 - CT Tan**
