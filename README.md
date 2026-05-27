@@ -23,7 +23,7 @@ app. It works offline after the first visit (service-worker cached).
 
 ## Seeded locations
 
-On first launch the app seeds the 17 farms below. They are all auto-favourited
+On first launch the app seeds the 18 farms below. They are all auto-favourited
 and can be renamed, edited, or deleted freely afterwards. Add as many more
 farms as you like from inside the app.
 
@@ -46,6 +46,7 @@ farms as you like from inside the app.
 | Kampung Temau - MK | 甘榜德茂 - MK | 3.91778, 101.91944 |
 | Dong - Hong | 东区 - 鸿总 | 4.09056, 101.96611 |
 | Ulu Gali - Jacky Kuan | 乌鲁加里 - Jacky Kuan | 3.83469, 101.91183 |
+| Raub Batu Tiga - James Lye | 劳勿三英里 - James Lye | 3.79275, 101.90389 |
 
 Two of CT Tan's plots in Sg. Klau are distinct farms at separate
 coordinates — seeded as **Sg. Klau 1 - CT Tan** and **Sg. Klau 2 - CT Tan**
@@ -121,7 +122,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforraub-202605272200
+wnext-weathernextforraub-202605240000
 ```
 
 ---
