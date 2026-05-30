@@ -2360,6 +2360,10 @@
                      saveUserData();
                 }
             }, (err) => {
+                // onSnapshot auto-reconnects; on recovery the success path above runs
+                // again and resets status to "Cloud Synced". So a transient channel
+                // error shows "Offline" only until the next snapshot arrives — we
+                // deliberately surface it so a genuinely offline farmer sees the truth.
                 console.warn("Sync error:", err);
                 setStatus("Offline", 'error');
             });
@@ -2392,7 +2396,7 @@
                     : [];
                 
                 const favDoc = doc(db, 'artifacts', appId, 'users', user.uid, 'favorites', 'data');
-                await setDoc(favDoc, { 
+                const payload = {
                     ids: favoriteIdsToSync, 
                     hidden: hiddenIds, 
                     renamed: renamedLocations, 
@@ -2401,7 +2405,30 @@
                     model: activeModel,
                     aiLangs: locationAiLangs,
                     locationCrops: locationCrops  // v1.0.62: now synced to cloud
-                });
+                };
+
+                // Silent retry-with-backoff (v1.0.157). Firestore's Write/channel
+                // occasionally returns a transient 400/unavailable (e.g. session-token
+                // rotation, or the event loop being starved during a long html2canvas
+                // share batch). The SDK retries its own channel, but a rejected setDoc
+                // promise would otherwise pop a scary "Save Failed" toast for a blip
+                // that succeeds on the next try. So we retry up to 3 times with
+                // exponential backoff before surfacing any error. Local data is already
+                // persisted to localStorage by the callers, so nothing is lost meanwhile.
+                let lastErr;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    try {
+                        await setDoc(favDoc, payload);
+                        return; // success — no status change needed (onSnapshot shows "Cloud Synced")
+                    } catch (err) {
+                        lastErr = err;
+                        // Wait 500ms, then 1500ms before the final attempt.
+                        if (attempt < 2) {
+                            await new Promise(r => setTimeout(r, 500 * Math.pow(3, attempt)));
+                        }
+                    }
+                }
+                throw lastErr; // all retries failed — fall through to catch below
             } catch(e) {
                 setStatus("Save Failed", 'error');
             }

@@ -1,9 +1,9 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.0.157 — form-field labels (a11y: for/id + aria-label). bump CACHE_VERSION on each release
+// Version 1.0.158 — Firestore write retry-with-backoff + a11y labels. bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202605300001';
+const CACHE_VERSION = 'wnext-weathernextforraub-202605300002';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
