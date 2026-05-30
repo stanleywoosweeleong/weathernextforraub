@@ -831,7 +831,7 @@
         <div class="flex justify-center mb-2">
             <span id="ui-proj-time" class="text-blue-700 font-black text-xs tabular-nums uppercase tracking-widest">--:-- --</span>
         </div>
-        <input type="range" id="timeline" min="0" max="24" value="0" step="1" class="w-full">
+        <input type="range" id="timeline" min="0" max="24" value="0" step="1" class="w-full" aria-label="时间轴 / Forecast hour timeline">
         <div class="flex justify-between mt-3 text-[10px] font-black uppercase tracking-widest items-center">
             <span class="text-slate-400 font-black">NOW</span>
             <span id="ui-date-display" class="text-[10px] font-black text-slate-400 tabular-nums tracking-widest uppercase">--/-- ---</span>
@@ -873,14 +873,14 @@
             </button>
             <h3 class="text-lg font-black text-slate-900 mb-4">Edit 修改地点</h3>
             
-            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">名字 / Name</label>
-            <input type="text" id="edit-name-en" class="w-input" placeholder="English Name">
-            <input type="text" id="edit-name-zh" class="w-input mt-2" placeholder="中文名字">
+            <label for="edit-name-en" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">名字 / Name</label>
+            <input type="text" id="edit-name-en" class="w-input" placeholder="English Name" aria-label="名字 (英文) / Name (English)">
+            <input type="text" id="edit-name-zh" class="w-input mt-2" placeholder="中文名字" aria-label="中文名字 / Chinese name">
             
-            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mt-4 mb-1">GPS 坐标 / Coordinates</label>
+            <label for="edit-lat" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mt-4 mb-1">GPS 坐标 / Coordinates</label>
             <div class="flex gap-2">
-                <input type="text" inputmode="decimal" id="edit-lat" class="w-input flex-1" placeholder="纬度 Lat">
-                <input type="text" inputmode="decimal" id="edit-lng" class="w-input flex-1" placeholder="经度 Lng">
+                <input type="text" inputmode="decimal" id="edit-lat" class="w-input flex-1" placeholder="纬度 Lat" aria-label="纬度 / Latitude">
+                <input type="text" inputmode="decimal" id="edit-lng" class="w-input flex-1" placeholder="经度 Lng" aria-label="经度 / Longitude">
             </div>
             <p class="text-[10px] text-slate-400 mt-1">小数格式，如 / Decimal format, e.g. 4.04597, 101.96039</p>
             
@@ -895,7 +895,7 @@
         <div class="w-modal-card !p-0 overflow-hidden flex flex-col max-h-[70vh] !w-[90%] !max-w-[360px]">
             <div class="p-4 border-b border-slate-100 flex items-center gap-3 bg-slate-50/50">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="search-input" class="flex-1 text-base font-bold text-slate-700 outline-none placeholder:font-normal bg-transparent" placeholder="Search location..." oninput="window.handleSearchInput()">
+                <input type="text" id="search-input" class="flex-1 text-base font-bold text-slate-700 outline-none placeholder:font-normal bg-transparent" placeholder="Search location..." oninput="window.handleSearchInput()" aria-label="搜索地点 / Search location">
                 <button onclick="document.getElementById('search-modal').classList.add('hidden')" class="p-2 text-slate-300 active:text-slate-500">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -929,7 +929,7 @@
             </button>
             <h3 class="text-lg font-black text-slate-900 mb-2">API Key</h3>
             <p class="text-xs text-slate-500 mb-4">Paste your free Gemini API Key to enable AI features. Get one at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="text-blue-600 underline">aistudio.google.com</a> → "Create API key". Stored only on this device.</p>
-            <input type="text" id="api-key-input" class="w-input" placeholder="AIzaSy..." onkeydown="if(event.key==='Enter') window.submitApiKey()">
+            <input type="text" id="api-key-input" class="w-input" placeholder="AIzaSy..." onkeydown="if(event.key==='Enter') window.submitApiKey()" aria-label="Gemini API 密钥 / Gemini API key">
             <button onclick="window.submitApiKey()" class="w-btn-primary mt-2 flex items-center justify-center">
                 <span class="mr-2">Save Key</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -950,11 +950,11 @@
             <h3 id="profile-modal-title" class="text-lg font-black text-slate-900 mb-1">👋 欢迎 / Welcome</h3>
             <p id="profile-modal-intro" class="text-xs text-slate-500 mb-3">输入您的名字，让这个 app 属于您。<br>Enter your name to personalize this app.</p>
             
-            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">显示名字 / Display name</label>
+            <label for="profile-name-input" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">显示名字 / Display name</label>
             <input type="text" id="profile-name-input" class="w-input mb-2" placeholder="您的名字 / Your name" maxlength="40" onkeydown="if(event.key==='Enter') window.submitProfile()">
             <p class="text-[10px] text-slate-400 mb-3">中文、英文、马来文皆可 · Any language works · Max 40 chars</p>
             
-            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">英文/拼音 名字（可选）/ English name (optional)</label>
+            <label for="profile-name-ascii-input" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">英文/拼音 名字（可选）/ English name (optional)</label>
             <input type="text" id="profile-name-ascii-input" class="w-input mb-1" placeholder="YourName" maxlength="32">
             <p class="text-[10px] text-slate-400 mb-4">仅用于分享截图的文件名（ASCII 字母数字）<br>Used only for shared screenshot filenames (ASCII letters/numbers)</p>
             
@@ -1028,11 +1028,11 @@
             <div class="relative overflow-hidden h-[280px]">
                 
                 <div id="view-manual" class="block h-full overflow-y-auto no-scrollbar pt-1">
-                    <input type="text" id="add-en" class="w-input text-sm" placeholder="Location Name (English)">
-                    <input type="text" id="add-zh" class="w-input text-sm" placeholder="地点名称 (中文)">
+                    <input type="text" id="add-en" class="w-input text-sm" placeholder="Location Name (English)" aria-label="地点名称 (英文) / Location name (English)">
+                    <input type="text" id="add-zh" class="w-input text-sm" placeholder="地点名称 (中文)" aria-label="地点名称 (中文) / Location name (Chinese)">
                     <div class="flex gap-2">
-                        <input type="number" id="add-lat" class="w-input text-sm" placeholder="Lat 纬度" step="0.0001">
-                        <input type="number" id="add-lng" class="w-input text-sm" placeholder="Lng 经度" step="0.0001">
+                        <input type="number" id="add-lat" class="w-input text-sm" placeholder="Lat 纬度" step="0.0001" aria-label="纬度 / Latitude">
+                        <input type="number" id="add-lng" class="w-input text-sm" placeholder="Lng 经度" step="0.0001" aria-label="经度 / Longitude">
                     </div>
                     <!-- Use current GPS location button. Populates the lat/lng inputs above
                          after the OS-level location permission prompt is granted. -->
@@ -5225,21 +5225,21 @@
                     
                     <button id="irrig-btn-main-${id}" onclick="window.toggleIrrigation('${id}')" class="ai-btn w-full justify-center" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); font-size:12px;">${labels.irrig}</button>
                     <div id="irrig-ui-${id}" style="display:none; margin-top:8px;">
-                         <input type="text" id="irrig-input-${id}" class="w-input" placeholder="e.g. 5 year old tree, big canopy">
+                         <input type="text" id="irrig-input-${id}" class="w-input" placeholder="e.g. 5 year old tree, big canopy" aria-label="${labels.irrig}">
                          <button id="irrig-btn-${id}" onclick="window.calculateIrrigation('${id}')" class="w-btn-primary" style="margin-top:0; font-size:12px;">✨ ${labels.calc}</button>
                          <div id="irrig-result-${id}" class="ai-result-box" style="display:none; margin-top:8px; border-color:#22d3ee; background:#ecfeff; color:#155e75;"></div>
                     </div>
 
                     <button id="harvest-btn-main-${id}" onclick="window.toggleHarvest('${id}')" class="ai-btn w-full justify-center" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); font-size:12px; margin-top:8px;">${labels.harvest}</button>
                     <div id="harvest-ui-${id}" style="display:none; margin-top:8px;">
-                        <input type="text" id="harvest-input-${id}" class="w-input" placeholder="e.g. Durian flowers fully open yesterday">
+                        <input type="text" id="harvest-input-${id}" class="w-input" placeholder="e.g. Durian flowers fully open yesterday" aria-label="${labels.harvest}">
                         <button id="harvest-btn-${id}" onclick="window.predictHarvest('${id}')" class="w-btn-primary" style="margin-top:0; font-size:12px;">✨ ${labels.est}</button>
                         <div id="harvest-result-${id}" class="ai-result-box" style="display:none; margin-top:8px; border-color:#fcd34d; background:#fffbeb; color:#92400e;"></div>
                     </div>
 
                     <button id="soil-btn-main-${id}" onclick="window.toggleSoilAdvisor('${id}')" class="ai-btn w-full justify-center" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); font-size:12px; margin-top:8px;">${labels.soil}</button>
                     <div id="soil-ui-${id}" style="display:none; margin-top:8px;">
-                         <input type="text" id="soil-input-${id}" class="w-input" placeholder="e.g. Sandy soil, prone to leaching...">
+                         <input type="text" id="soil-input-${id}" class="w-input" placeholder="e.g. Sandy soil, prone to leaching..." aria-label="${labels.soil}">
                          <button id="soil-btn-${id}" onclick="window.consultSoil('${id}')" class="w-btn-primary" style="margin-top:0; font-size:12px;">✨ ${labels.rec}</button>
                          <div id="soil-result-${id}" class="ai-result-box" style="display:none; margin-top:8px; border-color:#fcd34d; background:#fffbeb; color:#92400e;"></div>
                     </div>
