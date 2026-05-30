@@ -1,9 +1,9 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.0.155 — two-phase share + single link + html2canvas guard. bump CACHE_VERSION on each release
+// Version 1.0.156 — local Tailwind CSS (drop cdn.tailwindcss.com runtime). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202605280000';
+const CACHE_VERSION = 'wnext-weathernextforraub-202605300000';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
@@ -17,8 +17,8 @@ const SHELL_ASSETS = [
   './icon-512.png',
   './favicon-32.png',
   './apple-touch-icon.png',
+  './tailwind.css',
   // External CDN assets — cache so app loads fully offline after first visit
-  'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
 
@@ -31,7 +31,7 @@ self.addEventListener('install', (event) => {
     caches.open(SHELL_CACHE)
       .then((cache) => {
         // Use addAll with a fallback per-item to survive a single failure.
-        // Cross-origin CDN assets (cdn.tailwindcss.com, cdnjs) often lack CORS headers
+        // Cross-origin CDN assets (cdnjs html2canvas) often lack CORS headers
         // for fetch() pre-caching. Use 'no-cors' mode for them — produces an opaque
         // response which is cacheable but not introspectable (fine for static assets).
         return Promise.allSettled(
@@ -152,9 +152,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. CDN scripts (Tailwind, html2canvas) — cache-first (rarely changes).
+  // 4. CDN scripts (html2canvas) — cache-first (rarely changes).
   // Cross-origin CDNs without CORS headers need no-cors mode to be cacheable.
-  if (url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('cdn.tailwindcss.com')) {
+  if (url.hostname.includes('cdnjs.cloudflare.com')) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) {

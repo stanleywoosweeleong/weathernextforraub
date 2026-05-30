@@ -98,13 +98,14 @@ key is ever scraped.
 
 ## Deploying
 
-All 7 files live in the **repository root** — the service worker and manifest
+All 8 files live in the **repository root** — the service worker and manifest
 use relative `./` paths, so a root deploy works with no changes.
 
 ```
 index.html            — the app (single file: HTML + CSS + JS)
 manifest.json         — PWA metadata
 sw.js                 — service worker (offline cache)
+tailwind.css          — pre-built Tailwind utilities (generated, see below)
 icon-512.png          — app icon 512×512
 icon-192.png          — app icon 192×192
 apple-touch-icon.png  — iOS home-screen icon 180×180
@@ -122,7 +123,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforraub-202605240000
+wnext-weathernextforraub-202605300000
 ```
 
 ---
@@ -135,3 +136,10 @@ wnext-weathernextforraub-202605240000
   isolated from other WeatherNext regional builds so data never collides.
 - **Cloud sync:** Firebase, namespaced under `appId: wnext-ag-v41-weathernextforraub`.
 - **Offline:** full app shell + last-fetched weather cached by the service worker.
+- **Tailwind CSS:** pre-built static `tailwind.css` (Tailwind CLI v3), not the
+  runtime CDN script — the CDN is dev-only and logs a production warning. After
+  adding new utility classes to `index.html`, regenerate with:
+  `npx tailwindcss -c tailwind.config.js -i tw-input.css -o tailwind.css --minify`
+  Classes built only inside conditional JS strings are caught by the scanner as
+  long as they appear as literal text; otherwise add them to `safelist` in
+  `tailwind.config.js`.
