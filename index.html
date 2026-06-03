@@ -9449,7 +9449,7 @@
                     },
                     trace: 'trace only',
                     stormMaybe: 'Scattered storms possible in the window (uncertain)',
-                    stormMaybeConfident: 'Scattered storms likely in the window'
+                    stormMaybeConfident: 'Scattered storms likely in the window (fairly sure)'
                 },
                 zh: {
                     storm: '可能有暴雨时段',
@@ -9474,7 +9474,7 @@
                     },
                     trace: '微量',
                     stormMaybe: '时段内或有零星雷阵雨（不确定）',
-                    stormMaybeConfident: '时段内可能有雷阵雨'
+                    stormMaybeConfident: '时段内可能有雷阵雨（较确定）'
                 },
                 ms: {
                     storm: 'Masa kemungkinan ribut',
@@ -9497,7 +9497,7 @@
                     },
                     trace: 'sedikit sahaja',
                     stormMaybe: 'Ribut berselerak mungkin dalam masa ini (tidak pasti)',
-                    stormMaybeConfident: 'Ribut berselerak mungkin dalam masa ini'
+                    stormMaybeConfident: 'Ribut berselerak mungkin dalam masa ini (agak pasti)'
                 }
             };
             // For ta and my, no native-speaker confirmation of vocabulary — fall through
@@ -9648,7 +9648,34 @@
                     const conf = (window.confidenceCache && window.confidenceCache[lid])
                         ? window.confidenceCache[lid][dayIdx]
                         : null;
-                    if (conf && conf.confidence === 'high') {
+                    // VERSION A (combined confidence): on storm days where the storm-maybe
+                    // line FIRES, that line now carries the confidence as a bracketed tag
+                    // ("可能有雷阵雨（较确定）" vs "（不确定）"), so the standalone
+                    // "~ 模型一致" line would be redundant — suppress it there. But the
+                    // storm-maybe line only fires when NO hour reaches the 0.7mm threshold
+                    // (an unstable-but-dry day). If the day has a real measurable rain hour
+                    // (e.g. a 5pm drizzle), the hourly list shows that instead and there's
+                    // NO storm-maybe line to carry confidence — so keep the standalone
+                    // marker in that case. Decide by checking the actual hourly precip.
+                    let stormLineWillCarryConf = false;
+                    if (hasStorm) {
+                        try {
+                            const _precip = (typeof getHourlyData === 'function')
+                                ? getHourlyData(lid, 'precipitation', true) : null;
+                            if (_precip) {
+                                const _s = dayIdx * 24, _e = _s + 24;
+                                let _anyHour = false;
+                                for (let _h = _s; _h < _e && _h < _precip.length; _h++) {
+                                    if ((_precip[_h] || 0) >= 0.7) { _anyHour = true; break; }
+                                }
+                                // storm-maybe line fires only when there's no measurable hour
+                                stormLineWillCarryConf = !_anyHour;
+                            } else {
+                                stormLineWillCarryConf = true; // no data → storm-maybe path likely
+                            }
+                        } catch (e) { stormLineWillCarryConf = true; }
+                    }
+                    if (conf && conf.confidence === 'high' && !stormLineWillCarryConf) {
                         const highConfLabel = locLang === 'zh'
                             ? '~ 模型一致'
                             : (locLang === 'ms' ? '~ Model konsisten' : '~ Models agree');
