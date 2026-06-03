@@ -4995,7 +4995,7 @@
                 setH(`hdr-rh-${id}`, cH.rh);
                 setH(`hdr-leafwet-${id}`, `${cH.leafwet} <span id="lwsrc-${id}" class="lw-src-tag"></span>${help('leafwet','What is Leaf Wetness?')}`);
                 if (typeof window.applyLeafWetSource === 'function') window.applyLeafWetSource(id);
-                setH(`hdr-et0-${id}`, cH.et0);
+                setH(`hdr-et0-${id}`, `${cH.et0}${help('et0','What is ET0?')}`);
                 setH(`hdr-vpd-${id}`, `${cH.vpd}${help('vpd','What is VPD?')}`);
                 if (typeof fogT === 'function') setH(`hdr-fog-${id}`, fogT(lang).title);
             }
@@ -5004,7 +5004,7 @@
             // Refresh any OPEN help card so its text switches language in place,
             // without the user having to close and re-tap the "?" icon.
             try {
-                ['temp','wvet','cloud','storm','sky','accuracy','leafwet','vpd'].forEach(rt => {
+                ['temp','wvet','cloud','storm','sky','accuracy','leafwet','et0','vpd'].forEach(rt => {
                     const hc = el(`help-card-${rt}-${id}`);
                     if (hc && hc.classList.contains('open')) window.toggleHelpCard(id, rt, true);
                 });
