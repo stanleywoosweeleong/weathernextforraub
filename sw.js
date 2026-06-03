@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.1.4 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.1.5 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -13,13 +13,16 @@
 // CAPE/CIN storm card's terrain note is now COORDINATE-AWARE — it auto-detects
 // the nearest mountain range (Titiwangsa / Crocker / Iran) and which side it sits
 // on from each farm's lat/lng, or shows a coastal note if none is near. Works
-// across the whole app family with no per-build editing. Inherits the Cameron SW
+// across the whole app family with no per-build editing. v1.1.5: the fog help
+// card now also refreshes its text on language switch (was missing from the
+// open-card refresh list); audited all 10 help rowTypes — list is now complete.
+// Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031250';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031305';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

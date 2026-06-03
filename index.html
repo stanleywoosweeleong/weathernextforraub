@@ -5126,7 +5126,7 @@
             // Refresh any OPEN help card so its text switches language in place,
             // without the user having to close and re-tap the "?" icon.
             try {
-                ['temp','wvet','cloud','storm','sky','accuracy','leafwet','et0','vpd'].forEach(rt => {
+                ['temp','wvet','cloud','storm','sky','accuracy','leafwet','et0','vpd','fog'].forEach(rt => {
                     const hc = el(`help-card-${rt}-${id}`);
                     if (hc && hc.classList.contains('open')) window.toggleHelpCard(id, rt, true);
                 });
