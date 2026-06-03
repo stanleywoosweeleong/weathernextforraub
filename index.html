@@ -4573,7 +4573,7 @@
             if (forceRebuild && !isOpen) return; // nothing to refresh if closed
             if (isOpen && !forceRebuild) {
                 card.classList.remove('open');
-                icon.classList.remove('active');
+                icon?.classList.remove('active');  // icon may be null if header was re-rendered (icon span recreated) while card div persists
                 card.innerHTML = '';  // free DOM immediately since no animation
                 // Restore THIS row's chart elements hidden on open (info-row + SVG).
                 const HELP_ROW_CHART_IDS_C = {
@@ -4887,7 +4887,7 @@
             card.innerHTML = `<span class="help-card-close" onclick="window.toggleHelpCard('${id}', '${rowType}')" aria-label="${t.close}">×</span>${bodyHTML}`;
             if (forceRebuild) return; // content swapped in place; open-state already set
             card.classList.add('open');
-            icon.classList.add('active');
+            icon?.classList.add('active');  // icon may be null if header was just re-rendered; card open-state already set
             // THE REAL GAP CAUSE (seen in screenshots): when a card opens, the card expands
             // but THIS row's chart (info-row + absolute SVG) keeps its full height BELOW the
             // card — showing as a big empty block (the faint gridlines) before the next row.
