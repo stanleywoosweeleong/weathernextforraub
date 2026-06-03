@@ -7357,12 +7357,35 @@
                 // Fruits
                 strawberry:{ en: 'Strawberry Grower',    ms: 'Pekebun Strawberi',  zh: '草莓园老板',  ta: 'ஸ்ட்ராபெர்ரி விவசாயி', my: 'စတော်ဘယ်ရီခြံပိုင်ရှင်' },
                 grape:     { en: 'Grape Grower',         ms: 'Pekebun Anggur',     zh: '葡萄园老板',  ta: 'திராட்சை விவசாயி',     my: 'စပျစ်ခြံပိုင်ရှင်' },
+                chili:     { en: 'Chili Grower',         ms: 'Petani Cili',        zh: '辣椒园老板',  ta: 'மிளகாய் விவசாயி',      my: 'ငရုတ်သီးခြံပိုင်ရှင်' },
                 // Commodity & floriculture
                 tea:       { en: 'Tea Grower',           ms: 'Pekebun Teh',        zh: '茶园老板',    ta: 'தேயிலை விவசாயி',       my: 'လက်ဖက်ခြံပိုင်ရှင်' },
-                flower:    { en: 'Flower Grower',        ms: 'Pekebun Bunga',      zh: '花园老板',    ta: 'பூ விவசாயி',           my: 'ပန်းခြံပိုင်ရှင်' }
+                flower:    { en: 'Flower Grower',        ms: 'Pekebun Bunga',      zh: '花园老板',    ta: 'பூ விவசாயி',           my: 'ပန်းခြံပိုင်ရှင်' },
+                // Tree / orchard / plantation crops (Raub lowland)
+                durian:    { en: 'Durian Grower',        ms: 'Pekebun Durian',     zh: '榴莲园老板',  ta: 'துரியன் விவசாயி',      my: 'ဒူးရင်းခြံပိုင်ရှင်' },
+                banana:    { en: 'Banana Grower',        ms: 'Pekebun Pisang',     zh: '香蕉园老板',  ta: 'வாழை விவசாயி',         my: 'ငှက်ပျောခြံပိုင်ရှင်' },
+                palm:      { en: 'Oil Palm Grower',      ms: 'Pekebun Sawit',      zh: '油棕园老板',  ta: 'எண்ணெய் பனை விவசாயி',  my: 'ဆီအုန်းခြံပိုင်ရှင်' },
+                rice:      { en: 'Paddy Farmer',         ms: 'Petani Padi',        zh: '稻农',        ta: 'நெல் விவசாயி',         my: 'စပါးတောင်သူ' },
+                mango:     { en: 'Mango Grower',         ms: 'Pekebun Mangga',     zh: '芒果园老板',  ta: 'மாம்பழ விவசாயி',       my: 'သရက်ခြံပိုင်ရှင်' },
+                pepper:    { en: 'Pepper Grower',        ms: 'Pekebun Lada',       zh: '胡椒园老板',  ta: 'மிளகு விவசாயி',        my: 'ငရုပ်ကောင်းခြံပိုင်ရှင်' },
+                cocoa:     { en: 'Cocoa Grower',         ms: 'Pekebun Koko',       zh: '可可园老板',  ta: 'கொக்கோ விவசாயி',       my: 'ကိုကိုးခြံပိုင်ရှင်' },
+                coffee:    { en: 'Coffee Grower',        ms: 'Pekebun Kopi',       zh: '咖啡园老板',  ta: 'காபி விவசாயி',         my: 'ကော်ဖီခြံပိုင်ရှင်' },
+                rubber:    { en: 'Rubber Grower',        ms: 'Pekebun Getah',      zh: '橡胶园老板',  ta: 'ரப்பர் விவசாயி',       my: 'ရာဘာခြံပိုင်ရှင်' },
+                citrus:    { en: 'Citrus Grower',        ms: 'Pekebun Limau',      zh: '柑橘园老板',  ta: 'எலுமிச்சை விவசாயி',    my: 'လိမ္မော်ခြံပိုင်ရှင်' },
+                papaya:    { en: 'Papaya Grower',        ms: 'Pekebun Betik',      zh: '木瓜园老板',  ta: 'பப்பாளி விவசாயி',      my: 'သင်္ဘောသီးခြံပိုင်ရှင်' },
+                pineapple: { en: 'Pineapple Grower',     ms: 'Pekebun Nanas',      zh: '黄梨园老板',  ta: 'அன்னாசி விவசாயி',      my: 'နာနတ်ခြံပိုင်ရှင်' },
+                coconut:   { en: 'Coconut Grower',       ms: 'Pekebun Kelapa',     zh: '椰园老板',    ta: 'தேங்காய் விவசாயி',     my: 'အုန်းခြံပိုင်ရှင်' },
+                rambutan:  { en: 'Rambutan Grower',      ms: 'Pekebun Rambutan',   zh: '红毛丹园老板',ta: 'ரம்புட்டான் விவசாயி',  my: 'ကြက်မောက်ခြံပိုင်ရှင်' }
             };
-            const cropSalutation = (SALUTATIONS[currentCropIdForGreeting] && SALUTATIONS[currentCropIdForGreeting][langCode]) 
-                                   || SALUTATIONS.leafy.en;
+            // Fallback is LANGUAGE-AWARE: if a crop is somehow missing from the
+            // table, fall back to the generic "farmer/grower" word in the user's
+            // OWN language (not English), so the greeting never switches language
+            // on the user unexpectedly.
+            const GENERIC_SALUTATION = { en: 'Grower', ms: 'Petani', zh: '农友', ta: 'விவசாயி', my: 'တောင်သူ' };
+            const cropSalutation = (SALUTATIONS[currentCropIdForGreeting] && SALUTATIONS[currentCropIdForGreeting][langCode])
+                                   || (SALUTATIONS[currentCropIdForGreeting] && SALUTATIONS[currentCropIdForGreeting].en)
+                                   || GENERIC_SALUTATION[langCode]
+                                   || GENERIC_SALUTATION.en;
 
             const h = detailData[id];
             

@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.2.6 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.2.7 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -41,13 +41,20 @@
 // Applies to ALL THREE broadcast modes (favorites 3-day, all-stable 1-day,
 // all-stable hourly bilingual). v1.2.3: also sorted the favorites PRE-FETCH
 // order to match, so fetch and display order are consistent across all modes.
-// Inherits the Cameron SW
+// v1.2.7: fixed the AI Smart Briefing greeting addressing the wrong crop owner.
+// The SALUTATIONS table was inherited from Cameron with only its 15 veg/fruit
+// crops, so Raub's 14 tree/plantation/field crops (durian, oil palm, banana,
+// rice, etc.) fell through to the English 'Vegetable Grower' default — and since
+// durian is the seed default, every farm was mis-greeted. Added all 14 missing
+// crops (5 languages each) and made the fallback LANGUAGE-AWARE (generic '农友/
+// Petani/Grower' in the user's own language) so the greeting never silently
+// switches to English. Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031600';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031640';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
