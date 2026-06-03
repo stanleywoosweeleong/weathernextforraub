@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.1.7 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.2.1 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -22,13 +22,24 @@
 // are independent DOM nodes. v1.1.7: accessibility — added `for` attributes to
 // the 5 edit/profile-modal <label>s so each associates with its form field
 // (inputs already had aria-labels; this clears the DevTools a11y warning).
-// Inherits the Cameron SW
+// v1.2.0 (FEATURE): Phase-2 lowland disease models — TWO TIERS gated by each
+// crop's p2 flag. Tier A daily weather-driven scores: Phytophthora (durian/
+// pepper/citrus, rain+soil-moisture+drainage), rice blast (leaf-wetness+RH+
+// temp), Sigatoka (banana, leaf-wetness+RH+temp). Tier B standing soil
+// advisories (NO daily score): Ganoderma (oil palm), Fusarium/Panama (banana).
+// All grounded in published tropical agronomy but NOT field-validated — surfaced
+// via the AI agronomist context with a 'field estimate, tell us if wrong'
+// framing (growers are the validation layer). v1.2.1: the Phytophthora model
+// now reads ACTUAL root-zone soil moisture (9–27cm) as its heaviest driver
+// (was a rain-only proxy) — so it stays elevated for days after rain when the
+// surface is dry but roots are still saturated (the active infection window).
+// Graceful fallback to the rain-proxy when soil data is absent. Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031335';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031420';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

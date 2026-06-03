@@ -2592,8 +2592,127 @@
             let worstKey = primaryKey, worstScore = -1;
             Object.keys(diseases).forEach((k) => { if (diseases[k].score > worstScore) { worstScore = diseases[k].score; worstKey = k; } });
 
+            // ============================================================
+            // PHASE 2 — lowland-specific disease models (added v1.2.0).
+            // These are FIELD-CALIBRATION ESTIMATES grounded in published
+            // tropical agronomy, NOT field-validated. The app surfaces them with
+            // a "field estimate — tell us if wrong" note so experienced growers
+            // can correct them (Malaysia has few certified agronomists, so the
+            // farmers' own ground-truth is the validation layer).
+            //
+            // TWO TIERS, by disease biology:
+            //  • Tier A — DAILY weather-driven (Phytophthora, rice blast, Sigatoka):
+            //    real 0–100 daily scores, only attached when the crop is relevant
+            //    (via the crop's `p2` flag), so e.g. blast shows only for rice.
+            //  • Tier B — STANDING soil-borne advisories (Ganoderma, Fusarium):
+            //    NO daily score (these are chronic, latent, root/soil diseases that
+            //    do not respond to daily weather). Returned as `advisories` — the
+            //    dashboard shows them as persistent management cards, not a forecast.
+            // ------------------------------------------------------------
+            const p2key = (CROP_SUSCEPT[cropId] && CROP_SUSCEPT[cropId].p2) ? CROP_SUSCEPT[cropId].p2 : null;
+            const phase2 = {};        // daily-scored Tier-A diseases relevant to this crop
+            const advisories = [];    // standing Tier-B soil advisories
+
+            // --- Tier A models (each returns 0–100), gated by relevance ---
+            // PHYTOPHTHORA (durian patch canker / foot rot; also pepper foot rot,
+            //   citrus). RAIN- & SOIL-MOISTURE driven, NOT leaf-wetness: spores
+            //   spread in free water and waterlogged soil. Wet season >> dry season.
+            //   Drivers: today's rain (the triggering free-water/splash event) +
+            //   recent multi-day wet buildup + ACTUAL root-zone soil moisture (the
+            //   sustained-saturation signal that keeps roots infectable for days
+            //   AFTER rain, when the surface looks dry but the 9–27cm zone is still
+            //   wet) + poor-drainage terrain zone. Warm band 24–30°C.
+            //   Sources: ITFNet/TFNet durian patch canker; Vawdrey 2005 (wet 35% vs
+            //   dry 24% root-rot incidence); Drenth & Guest, "Phytophthora in SE Asia".
+            const phytophthora = (() => {
+                const rainTerm = _nRain(rainMM);                          // today's rain 0–1
+                const recentMM = recentActualRain(dataObj) || 0;          // 3-day actual rain
+                const buildTerm = Math.max(0, Math.min(1, recentMM / 60)); // 60mm/3d → 1
+                const rhTerm = _nRH(avgRH);
+                // ACTUAL root-zone soil moisture (9–27cm), volumetric m³/m³.
+                // Open-Meteo grid estimate (not an in-field sensor), so treat as a
+                // model signal. Scale: 0.20 (moist loam) → 0, 0.45 (saturated) → 1.
+                // This is a SLOW signal — it stays high for days after rain, exactly
+                // the window when Phytophthora root/collar infection is active.
+                const smArr = slice(pick('soil_moisture_9_to_27cm'));
+                const smVals = smArr.filter(v => typeof v === 'number' && isFinite(v));
+                const haveSoil = smVals.length > 0;
+                const soilMean = haveSoil ? (smVals.reduce((a, b) => a + b, 0) / smVals.length) : null;
+                const soilTerm = haveSoil ? Math.max(0, Math.min(1, (soilMean - 0.20) / 0.25)) : null;
+                // Blend. WITH soil data: today-rain ×0.25 + recent-buildup ×0.25 +
+                //   soil-saturation ×0.35 + RH ×0.15 (soil is the heaviest single
+                //   driver — it integrates rain history physically). WITHOUT soil
+                //   data (older cached payloads): fall back to the rain-proxy mix
+                //   (today ×0.40 + buildup ×0.40 + RH ×0.20) so nothing breaks.
+                const base = haveSoil
+                    ? (rainTerm * 0.25 + buildTerm * 0.25 + soilTerm * 0.35 + rhTerm * 0.15)
+                    : (rainTerm * 0.40 + buildTerm * 0.40 + rhTerm * 0.20);
+                // Drainage/terrain: water-pooling zones raise soil-saturation risk.
+                const drainMult = ({ riverine: 1.25, lowvalley: 1.15, openplain: 1.0, coastal: 0.9 })[loc?.zone] || 1.0;
+                const val = base * _nTemp(tMean, 24, 30) * 100 * drainMult * pastFactor;
+                return Math.max(0, Math.min(100, Math.round(val)));
+            })();
+            // RICE BLAST (Magnaporthe oryzae). Classic leaf-wetness + high-RH +
+            //   moderate-temp model. Infection needs ~7–14h leaf wetness, RH ≥ ~90%,
+            //   optimum 25–28°C (favoured 17–28°C). Sources: UC IPM; Du 2021 (Plant
+            //   Pathology); Kirtphaiboon 2021; EPIRICE/EPIBLAST.
+            const blast = (() => {
+                const lwTerm = Math.max(0, Math.min(1, (leafWetHrs - 6) / 8));  // 6h→0 … 14h→1
+                const rhTerm = avgRH >= 90 ? 1 : avgRH >= 85 ? 0.6 : avgRH >= 80 ? 0.3 : 0.1;
+                const base = lwTerm * 0.55 + rhTerm * 0.35 + _nRain(rainMM) * 0.10;
+                const val = base * _nTemp(tMean, 22, 28) * 100 * (zoneMult) * pastFactor;
+                return Math.max(0, Math.min(100, Math.round(val)));
+            })();
+            // BLACK/YELLOW SIGATOKA (banana, Pseudocercospora/Mycosphaerella).
+            //   Foliar fungal: needs leaf wetness OR RH ≥90%; infection completes in
+            //   ~12h moist at optimum temp (longer when cooler). Favoured by high RH
+            //   + rainfall in lowland tropics, optimum ~27°C. Sources: Jacome & Schuh
+            //   1992; METOS banana model; Bebber 2019 (Phil Trans R Soc B).
+            const sigatoka = (() => {
+                const lwTerm = Math.max(0, Math.min(1, (leafWetHrs - 4) / 10)); // 4h→0 … 14h→1
+                const rhTerm = avgRH >= 90 ? 1 : avgRH >= 85 ? 0.55 : avgRH >= 80 ? 0.25 : 0.05;
+                const base = lwTerm * 0.45 + rhTerm * 0.35 + _nRain(rainMM) * 0.20;
+                const val = base * _nTemp(tMean, 25, 30) * 100 * (zoneMult) * pastFactor;
+                return Math.max(0, Math.min(100, Math.round(val)));
+            })();
+
+            // Attach the Tier-A model that matches this crop's p2 flag (if any).
+            // footrot is pepper's Phytophthora; canker (citrus) is also Phytophthora-
+            //   adjacent, so both map to the phytophthora model for the daily score.
+            if (p2key === 'phytophthora' || p2key === 'footrot' || p2key === 'canker') {
+                phase2.phytophthora = { score: phytophthora, band: riskBand(phytophthora), modelKey: p2key };
+            } else if (p2key === 'blast') {
+                phase2.blast = { score: blast, band: riskBand(blast), modelKey: 'blast' };
+            } else if (p2key === 'sigatoka') {
+                phase2.sigatoka = { score: sigatoka, band: riskBand(sigatoka), modelKey: 'sigatoka' };
+            }
+
+            // --- Tier B standing soil advisories (no daily score) ---
+            // GANODERMA basal stem rot (oil palm): soil-borne white-rot, latent,
+            //   long gestation; spreads via root contact & buried/rotting stumps;
+            //   favoured by poor-drainage, high-water-retention soils. ~60% of
+            //   Malaysian OP plantations affected. Source: MDPI Plants 2022;
+            //   APS Plant Disease 2023; PMC review 2021.
+            // FUSARIUM / Panama wilt (banana): soil-borne, persists in soil for
+            //   years, warm soils ~27–32°C; no cure once established — exclusion &
+            //   clean planting material are the controls. Source: EOS; APS.
+            if (p2key === 'ganoderma') {
+                advisories.push({ key: 'ganoderma', zoneRisk: ({ riverine: 'higher', lowvalley: 'higher', openplain: 'moderate', coastal: 'moderate' })[loc?.zone] || 'moderate' });
+            }
+            // Banana faces BOTH Sigatoka (foliar, daily-scored above) AND Fusarium/
+            // Panama wilt (chronic soil-borne) — so add the Fusarium advisory for any
+            // banana crop, plus any crop explicitly flagged fusarium.
+            if (p2key === 'fusarium' || cropId === 'banana') {
+                advisories.push({ key: 'fusarium', zoneRisk: 'standing' });
+            }
+
+            // Phase-2 estimates are not field-validated — flag so the UI can show
+            // the "field estimate, tell us if wrong" note.
+            const phase2Unvalidated = (Object.keys(phase2).length > 0 || advisories.length > 0);
+
             return {
                 diseases, primaryKey, worstKey,
+                phase2, advisories, phase2Unvalidated,
                 metrics: {
                     leafWetHrs, fogHrs, rainMM: Math.round(rainMM * 10) / 10,
                     leafWetSource,
@@ -4948,7 +5067,39 @@
                         const r = window.computeDiseaseRisk(loc, dObj, 0, cropId);
                         if (r) {
                             const d = r.diseases, m = r.metrics;
-                            chCtx += `The app's microclimate model for today estimates — Botrytis ${d.botrytis.score}/100, Downy mildew ${d.downy.score}/100, Late blight ${d.blight.score}/100, Powdery mildew ${d.powdery.score}/100, Early blight ${d.earlyblight.score}/100, Anthracnose ${d.anthracnose.score}/100; leaf-wetness ~${m.leafWetHrs}h (${m.leafWetSource === 'model' ? 'native model field' : 'derived from RH/dew/rain/cloud'}), fog/saturation ~${m.fogHrs}h, rain ${m.rainMM}mm, mean RH ${m.avgRH}%, mean temp ${m.tMean}°C. ${m.pastAvailable ? `Recent 3-day actual weather shows ${m.pastWetDays}/3 wet days (${m.recentRainMM}mm actual rain), giving a ${m.pastFactor>=1.15?'RISING':m.pastFactor<=0.85?'EASING':'steady'} multi-day infection pressure (${m.pastFactor}×).` : ''} Use these figures when judging disease pressure. Note: for tree/plantation crops (durian, oil palm, banana, rice, etc.) the biggest local threats — e.g. Phytophthora patch canker, Ganoderma, Fusarium wilt, rice blast — are NOT yet in the 6-disease model, so do not treat a low score as 'all clear' for those crops. `;
+                            chCtx += `The app's microclimate model for today estimates — Botrytis ${d.botrytis.score}/100, Downy mildew ${d.downy.score}/100, Late blight ${d.blight.score}/100, Powdery mildew ${d.powdery.score}/100, Early blight ${d.earlyblight.score}/100, Anthracnose ${d.anthracnose.score}/100; leaf-wetness ~${m.leafWetHrs}h (${m.leafWetSource === 'model' ? 'native model field' : 'derived from RH/dew/rain/cloud'}), fog/saturation ~${m.fogHrs}h, rain ${m.rainMM}mm, mean RH ${m.avgRH}%, mean temp ${m.tMean}°C. ${m.pastAvailable ? `Recent 3-day actual weather shows ${m.pastWetDays}/3 wet days (${m.recentRainMM}mm actual rain), giving a ${m.pastFactor>=1.15?'RISING':m.pastFactor<=0.85?'EASING':'steady'} multi-day infection pressure (${m.pastFactor}×).` : ''} Use these figures when judging disease pressure. `;
+                            // PHASE 2 — crop-specific lowland disease models. These are
+                            // FIELD-CALIBRATION ESTIMATES (grounded in published tropical
+                            // agronomy, not yet field-validated), so the AI should treat them
+                            // as a guide and invite the farmer's own observation.
+                            try {
+                                const P2NAME = {
+                                    phytophthora: 'Phytophthora (patch canker / foot rot)',
+                                    footrot: 'Phytophthora foot rot',
+                                    canker: 'Phytophthora-type canker',
+                                    blast: 'Rice blast',
+                                    sigatoka: 'Sigatoka leaf spot'
+                                };
+                                if (r.phase2 && Object.keys(r.phase2).length) {
+                                    const parts = Object.keys(r.phase2).map(k => {
+                                        const p = r.phase2[k];
+                                        const nm = P2NAME[p.modelKey] || P2NAME[k] || k;
+                                        return `${nm} ${p.score}/100`;
+                                    });
+                                    chCtx += `Crop-specific lowland disease estimate for today — ${parts.join(', ')}. This is a FIELD-CALIBRATION ESTIMATE (not yet validated against local field trials); weigh it together with what the grower actually sees on the trees, and if it disagrees with their observation, trust the grower. `;
+                                }
+                                // Standing soil-borne advisories (chronic, NOT a daily forecast).
+                                if (r.advisories && r.advisories.length) {
+                                    const advTxt = r.advisories.map(a => {
+                                        if (a.key === 'ganoderma') return `Ganoderma basal stem rot — a chronic soil-borne risk for this oil-palm site (${a.zoneRisk} based on drainage/terrain); it is NOT weather-triggered day to day, so manage it through sanitation (remove/destroy infected stumps & boles), avoiding root wounds, good drainage, and early detection of basal fruiting bodies`;
+                                        if (a.key === 'fusarium') return `Fusarium/Panama wilt — a chronic soil-borne banana risk that persists in soil for years; it is NOT weather-triggered day to day, so manage it through clean planting material, exclusion/quarantine of infected mats, drainage, and not moving soil between blocks`;
+                                        return a.key;
+                                    });
+                                    chCtx += `Standing soil-disease advisories for this crop (chronic, not daily weather): ${advTxt.join('; ')}. Raise these when the grower asks about long-term crop health rather than today's spray decision. `;
+                                }
+                                // Remaining un-modeled threats — keep the honesty caveat for the rest.
+                                chCtx += `Some other crop threats (e.g. bacterial leaf blight, citrus greening, coffee berry disease, heart rot) are still not individually modeled, so do not treat a low score as 'all clear' for those. `;
+                            } catch (e) { /* phase2 context best-effort */ }
                             // Dedicated fog/visibility line — lowland fog is mainly a dawn
                             // road-safety hazard (river mist) plus a leaf-wetness contributor,
                             // so the AI gets the proper fog-engine detail.
