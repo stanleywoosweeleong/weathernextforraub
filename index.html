@@ -5410,6 +5410,52 @@
             } catch (e) { if (e.name !== 'AbortError') setStatus("Network Error", 'error'); }
         }
 
+        // ============================================================
+        // RATE-LIMIT HELPERS (v1.2.4) — Open-Meteo's free tier limits requests
+        // per IP. A multi-farm broadcast fires many calls at once (each farm =
+        // main + past + daily fetch), which can return HTTP 429 (Too Many
+        // Requests). These two helpers keep broadcasts under the cap.
+        // ------------------------------------------------------------
+        const _sleep = (ms) => new Promise(r => setTimeout(r, ms));
+        // fetch() wrapper: on 429 (or a 5xx hiccup), wait and retry with growing
+        // backoff. Honours the server's Retry-After header when present. Returns
+        // the Response (caller reads .ok / .json()); gives up after `tries`.
+        const fetchWithRetry = async (url, opts = {}, tries = 4) => {
+            let delay = 800; // ms; doubles each retry (0.8s, 1.6s, 3.2s)
+            for (let attempt = 0; attempt < tries; attempt++) {
+                let res;
+                try {
+                    res = await fetch(url, opts);
+                } catch (e) {
+                    // Network error — retry unless this was the last attempt.
+                    if (attempt === tries - 1) throw e;
+                    await _sleep(delay); delay *= 2; continue;
+                }
+                if (res.status !== 429 && res.status < 500) return res; // success or non-retryable
+                if (attempt === tries - 1) return res; // out of retries — hand back the (failed) response
+                // Respect Retry-After (seconds) if the server sent one, else backoff.
+                const ra = parseInt(res.headers.get('retry-after') || '', 10);
+                await _sleep(Number.isFinite(ra) ? ra * 1000 : delay);
+                delay *= 2;
+            }
+        };
+        // Run `worker(item)` over `items` with at most `concurrency` in flight at
+        // once (a simple promise pool). Spreads request bursts over time so the
+        // rate limiter isn't tripped, while staying much faster than fully serial.
+        const runPooled = async (items, worker, concurrency = 3) => {
+            const queue = items.slice();
+            const runners = [];
+            for (let i = 0; i < Math.min(concurrency, queue.length); i++) {
+                runners.push((async () => {
+                    while (queue.length) {
+                        const item = queue.shift();
+                        try { await worker(item); } catch (e) { /* worker handles its own errors */ }
+                    }
+                })());
+            }
+            await Promise.all(runners);
+        };
+
         async function fetchMultiDetailWeather(locIds, renderIds = null) {
              if(!locIds || locIds.length === 0) return;
              // renderIds lets a caller fetch a SUBSET (e.g. one location whose model
@@ -5493,7 +5539,10 @@
                  ].join(',');
                  const locModel = window.modelFor(id);
                  const url = `https://api.open-meteo.com/v1/forecast?latitude=${s.lat}&longitude=${s.lng}&hourly=${hourlyVars}&models=${locModel}&timezone=auto&forecast_days=14`;
-                 const res = await fetch(url); const data = await res.json();
+                 // Open-Meteo's free tier rate-limits by IP. A multi-farm broadcast can
+                 // burst many requests; if we hit HTTP 429 (Too Many Requests), wait and
+                 // retry a few times with growing backoff rather than failing the farm.
+                 const res = await fetchWithRetry(url); const data = await res.json();
 
                  // PAST WEATHER (isolated): a small, separate call for the last 3 days
                  // of ACTUAL weather. Used ONLY by the disease engine to accumulate
@@ -5505,7 +5554,7 @@
                  try {
                      const pastVars = 'relative_humidity_2m,temperature_2m,dew_point_2m,precipitation,cloudcover_mid';
                      const pastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${s.lat}&longitude=${s.lng}&hourly=${pastVars}&models=${locModel}&timezone=auto&past_days=3&forecast_days=1`;
-                     const pastRes = await fetch(pastUrl);
+                     const pastRes = await fetchWithRetry(pastUrl);
                      if (pastRes.ok) {
                          const pastData = await pastRes.json();
                          if (pastData && pastData.hourly && !pastData.error) {
@@ -5522,7 +5571,7 @@
                  // Wrapped in try/catch because not all models support these — if it fails, the app continues without them.
                  try {
                      const dailyUrl = `https://api.open-meteo.com/v1/forecast?latitude=${s.lat}&longitude=${s.lng}&daily=leaf_wetness_probability_mean,growing_degree_days_base_0_limit_50,sunrise,sunset&models=${locModel}&timezone=auto&forecast_days=14`;
-                     const dailyRes = await fetch(dailyUrl);
+                     const dailyRes = await fetchWithRetry(dailyUrl);
                      if (dailyRes.ok) {
                          const dailyData = await dailyRes.json();
                          if (dailyData && dailyData.daily && !dailyData.error) {
@@ -5570,7 +5619,12 @@
              // Re-render all requested locIds afterwards so freshly-fetched data replaces
              // the stale-cached version that was shown during phase 1.
              try { 
-                 await Promise.all(idsToFetch.map(fetchOne));
+                 // THROTTLED: process at most a few farms concurrently instead of all
+                 // at once. Each farm = 3 API calls (main+past+daily), so 18 farms ×3 =
+                 // ~54 requests; firing them simultaneously trips Open-Meteo's free-tier
+                 // rate limit (HTTP 429). A small pool spreads them out and, with
+                 // fetchWithRetry's backoff, keeps multi-farm broadcasts under the cap.
+                 await runPooled(idsToFetch, fetchOne, 3);
                  renderReports(_renderSet);
                  setStatus("Ready", true);
              } catch (e) { setStatus("Sync Error", 'error'); }
@@ -10081,7 +10135,7 @@
                               + `latitude=${loc.lat}&longitude=${loc.lng}`
                               + `&hourly=precipitation&models=ecmwf_ifs025`
                               + `&timezone=auto&forecast_days=7`;
-                    const resp = await fetch(url);
+                    const resp = await fetchWithRetry(url);
                     if (!resp.ok) {
                         console.warn(`[ensemble] fetch failed for ${id}: HTTP ${resp.status}`);
                         return;
@@ -10151,8 +10205,10 @@
                 }
             };
             
-            // Run all locations in parallel. Each is independent so no need to serialize.
-            await Promise.all(ids.map(fetchOne));
+            // Throttled (v1.2.4): the ensemble fetch also runs during a broadcast,
+            // so firing every farm at once compounds the rate-limit pressure from the
+            // main detail fetch. Use the same small pool to stay under Open-Meteo's cap.
+            await runPooled(ids, fetchOne, 3);
         };
         
         // Tap handler for either broadcast button. Builds text, copies to clipboard,
