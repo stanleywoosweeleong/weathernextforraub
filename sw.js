@@ -1,17 +1,17 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.1.0 — LOWLAND RAUB ARCHITECTURE UPGRADE. Rebased weathernextforraub
-// onto the Cameron Highlands architecture (microclimate disease-risk engine,
-// fog engine, 29-crop master list) and recalibrated everything for hot lowland
-// conditions: elevation amplifier neutralized, fog→disease coupling reduced,
-// disease temperature bands shifted up to lowland pathogen reality, lowland
-// zone model (riverine/lowvalley/openplain/coastal), 18 Raub seed farms.
-// Inherits the Cameron SW improvements: inlined pre-built Tailwind (no CDN
-// runtime), and rule #1 returning a bare `return` for Firebase SDK module
-// requests (blank-screen fix). bump CACHE_VERSION on each release
+// Version 1.1.1 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// architecture (microclimate disease-risk engine, fog engine, 29-crop master
+// list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
+// the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
+// chart scale (VPD_FULL 2.5→4.0) so high lowland afternoon VPD no longer
+// saturates the band and collides dots with labels. Inherits the Cameron SW
+// improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
+// returning a bare `return` for Firebase SDK module requests (blank-screen
+// fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031107';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031146';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
