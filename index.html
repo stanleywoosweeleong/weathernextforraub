@@ -9448,7 +9448,8 @@
                         return null;
                     },
                     trace: 'trace only',
-                    stormMaybe: 'Scattered storms possible in the window (uncertain)'
+                    stormMaybe: 'Scattered storms possible in the window (uncertain)',
+                    stormMaybeConfident: 'Scattered storms likely in the window'
                 },
                 zh: {
                     storm: '可能有暴雨时段',
@@ -9472,7 +9473,8 @@
                         return null;
                     },
                     trace: '微量',
-                    stormMaybe: '时段内或有零星雷阵雨（不确定）'
+                    stormMaybe: '时段内或有零星雷阵雨（不确定）',
+                    stormMaybeConfident: '时段内可能有雷阵雨'
                 },
                 ms: {
                     storm: 'Masa kemungkinan ribut',
@@ -9494,7 +9496,8 @@
                         return null;
                     },
                     trace: 'sedikit sahaja',
-                    stormMaybe: 'Ribut berselerak mungkin dalam masa ini (tidak pasti)'
+                    stormMaybe: 'Ribut berselerak mungkin dalam masa ini (tidak pasti)',
+                    stormMaybeConfident: 'Ribut berselerak mungkin dalam masa ini'
                 }
             };
             // For ta and my, no native-speaker confirmation of vocabulary — fall through
@@ -9768,9 +9771,22 @@
                         const dayObj = (typeof days !== 'undefined' && days) ? days[dayIdx] : null;
                         const dayHasStorm = !!(dayObj && dayObj.cape >= 1500 && dayObj.triggerWindow);
                         if (dayHasStorm && V.stormMaybe) {
-                            const topStorm = V.stormMaybe;
+                            // Reconcile with the ensemble confidence marker. The storm-maybe
+                            // line normally says "(uncertain)" because CAPE flags storm
+                            // POTENTIAL but the model can't place measurable rain in a
+                            // specific hour (convective storms are localized). HOWEVER, if
+                            // the ensemble shows HIGH agreement for this day, printing
+                            // "(uncertain)" right under a "~ models agree" summary line is
+                            // contradictory and confusing. In that case use the confident
+                            // wording (no "(uncertain)" qualifier) so the two lines align.
+                            const _conf = (window.confidenceCache && window.confidenceCache[lid])
+                                ? window.confidenceCache[lid][dayIdx] : null;
+                            const _agree = _conf && _conf.confidence === 'high';
+                            const topStorm = (_agree && V.stormMaybeConfident) ? V.stormMaybeConfident : V.stormMaybe;
                             // Malay second line for the bilingual (hourly) broadcast.
-                            const msStorm = (VOCAB.ms && VOCAB.ms.stormMaybe) ? VOCAB.ms.stormMaybe : topStorm;
+                            const msStorm = (_agree && VOCAB.ms && VOCAB.ms.stormMaybeConfident)
+                                ? VOCAB.ms.stormMaybeConfident
+                                : ((VOCAB.ms && VOCAB.ms.stormMaybe) ? VOCAB.ms.stormMaybe : topStorm);
                             return includeMalay ? [topStorm, msStorm] : [topStorm];
                         }
                         // Dry day. Single-language or bilingual no-rain line.

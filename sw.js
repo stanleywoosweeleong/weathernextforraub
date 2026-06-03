@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.2.4 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.2.5 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -47,7 +47,7 @@
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031515';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031540';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
