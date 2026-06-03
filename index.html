@@ -9248,7 +9248,7 @@
         };
         
         // Build the bulk broadcast text. mode is 'favorites' or 'allStable'.
-        window.buildBroadcastText = (mode, idsOverride, greetingLang) => {
+        window.buildBroadcastText = (mode, idsOverride, greetingLang, freshnessOverride) => {
             // `lang` controls the BROADCAST GREETING and serves as the per-location
             // fallback when no per-location preference is set. If the caller passed
             // an explicit greetingLang (via the picker), use that — otherwise fall
@@ -9260,7 +9260,17 @@
             
             // Compute date range and model run info for the header.
             const dayOffset = getTargetDayOffset();
-            const runInfo = getLatestModelRun();
+            // Prefer the REAL model-run freshness (from live metadata, passed in by the
+            // async broadcast handler) over the old clock-only getLatestModelRun() guess,
+            // which assumed a fixed 5h availability delay and could falsely report "9h
+            // ago / 20:00" at ~5:30 AM even when the 1 AM run was already fetched. Fall
+            // back to the clock guess only when no real value is available (e.g. the
+            // synchronous single-location share path, or a metadata fetch failure).
+            const realRun = (freshnessOverride && typeof freshnessOverride.sinceMin === 'number')
+                ? freshnessOverride : null;
+            const runInfo = realRun
+                ? { initMytStr: realRun.availMytDate, ageHours: Math.round(realRun.sinceMin / 60), _real: true }
+                : getLatestModelRun();
             
             // Target date — computed once, used for both Gregorian and lunar display.
             // After-6PM rule already applied via dayOffset (today=0, tomorrow=1).
@@ -9365,14 +9375,16 @@
             
             // Data freshness header.
             // ----------
-            // Shown ONLY when the data is unexpectedly stale (>8 hours since model
-            // initialization). For normal-fresh broadcasts (5-6 hour data, the typical
-            // case at Stanley's 5:30 AM / 7 AM / 1 PM / 8 PM broadcast windows), the
-            // timestamp adds visual noise without decision value — recipients trust
-            // the broadcast schedule. When data IS stale, the timestamp suddenly
-            // matters because it explains why the forecast might disagree with what
-            // recipients are experiencing outside.
-            const dataHeader = runInfo.ageHours > 8
+            // Shown ONLY when the data is genuinely stale. With REAL freshness
+            // (from live metadata) "stale" means the latest model run is older than
+            // one full 6-hour cycle — i.e. the next run is overdue and we're serving
+            // data from a missed cycle. That is the case that actually matters and is
+            // worth warning recipients about. With the clock-only fallback we keep the
+            // historical >8h guard. In the normal fresh case (data 0–6h old, the
+            // typical state at the broadcast windows) NO header is shown — the
+            // timestamp would be noise, and recipients trust the broadcast schedule.
+            const isStale = realRun ? (realRun.fresh === false) : (runInfo.ageHours > 8);
+            const dataHeader = isStale
                 ? `⚠️ 数据较旧 (Last updated: ${runInfo.initMytStr}, ${runInfo.ageHours}h ago)`
                 : null;
             
@@ -10385,7 +10397,18 @@
                     }
                 }
                 
-                const text = window.buildBroadcastText(mode, null, greetingLang);
+                // Get the REAL model-run freshness (live metadata) so the broadcast
+                // header reports true data age, not the old clock guess. Non-blocking
+                // failure: if it returns null, buildBroadcastText falls back to the
+                // clock estimate. Cached, so this rarely costs a network round-trip.
+                let _freshness = null;
+                try {
+                    if (typeof computeModelRunFreshness === 'function') {
+                        _freshness = await computeModelRunFreshness();
+                    }
+                } catch (e) { _freshness = null; }
+
+                const text = window.buildBroadcastText(mode, null, greetingLang, _freshness);
                 
                 // Copy to clipboard for users who want to paste manually.
                 // Useful as a fallback if the share dispatch below is dismissed
@@ -10548,6 +10571,66 @@
         // Defensive: if the metadata endpoint shape differs or the fetch fails,
         // it falls back to a neutral message rather than breaking anything.
         // ============================================================
+        // ============================================================
+        // REAL model-run freshness (v1.2.8). Queries Open-Meteo's live metadata
+        // for the model we actually fetch from, and derives the most-recent run
+        // that has truly landed. This is the SAME logic the freshness pill uses,
+        // extracted so the WhatsApp broadcast header can show the REAL data age
+        // instead of the old clock-only guess (getLatestModelRun), which assumed
+        // a fixed 5h delay and could wrongly report "9h ago / 20:00" at ~5:30 AM
+        // even when the 1 AM run had already been fetched. Returns null on failure
+        // (caller falls back gracefully). Cached briefly so repeated calls within
+        // a broadcast don't re-hit the network.
+        let _modelRunCache = { ts: 0, result: null };
+        const computeModelRunFreshness = async () => {
+            const now = Date.now();
+            // Reuse a result computed in the last 2 minutes (broadcast + pill may
+            // both ask within seconds of each other).
+            if (_modelRunCache.result && (now - _modelRunCache.ts) < 2 * 60 * 1000) {
+                return _modelRunCache.result;
+            }
+            try {
+                const freshModel = (typeof activeModel === 'string' && activeModel && activeModel !== 'best_match')
+                    ? activeModel : 'ecmwf_ifs';
+                const metaUrl = `https://api.open-meteo.com/data/${freshModel}/static/meta.json`;
+                const res = await fetch(metaUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error('meta http ' + res.status);
+                const meta = await res.json();
+                const initT = meta.last_run_initialisation_time;
+                const availT = meta.last_run_availability_time;
+                if (typeof initT !== 'number' || typeof availT !== 'number') throw new Error('meta shape');
+                const fmtMyt = (ms) => new Intl.DateTimeFormat('en-GB', {
+                    timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', hour12: false
+                }).format(new Date(ms));
+                const fmtMytDate = (ms) => new Intl.DateTimeFormat('en-GB', {
+                    timeZone: 'Asia/Kuala_Lumpur', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+                }).format(new Date(ms)).replace(',', '');
+                const META_DELAY_MS = 2 * 3600 * 1000;
+                const CYCLE_MS = 6 * 3600 * 1000;
+                const baseAvail = (availT * 1000) - META_DELAY_MS;
+                let curAvailMs = baseAvail;
+                while (curAvailMs + CYCLE_MS <= now) curAvailMs += CYCLE_MS;
+                while (curAvailMs > now) curAvailMs -= CYCLE_MS;
+                const nextAvailMs = curAvailMs + CYCLE_MS;
+                const sinceCurMin = Math.round((now - curAvailMs) / 60000);
+                const fresh = sinceCurMin <= (CYCLE_MS / 60000);
+                const result = {
+                    fresh,
+                    availMs: curAvailMs,
+                    availMyt: fmtMyt(curAvailMs),
+                    availMytDate: fmtMytDate(curAvailMs),
+                    nextMyt: fmtMyt(nextAvailMs),
+                    sinceMin: sinceCurMin,
+                    minsToNext: Math.round((nextAvailMs - now) / 60000)
+                };
+                _modelRunCache = { ts: now, result };
+                return result;
+            } catch (e) {
+                return null;
+            }
+        };
+        window.computeModelRunFreshness = computeModelRunFreshness;
+
         let _lastFreshnessCheck = 0;
         window.checkDataFreshness = async (force) => {
             const dot = document.getElementById('fresh-dot');
@@ -10566,79 +10649,24 @@
             };
             setDot('#cbd5e1');  // grey: checking
 
-            try {
-                // Query the metadata for the SAME model the app actually fetches forecasts
-                // from, so the freshness times correspond to OUR data. The app uses
-                // 'ecmwf_ifs' (HRES 9km); the older 'ecmwf_ifs025' (0.25°) is deprecated AND
-                // has an extra ~2h dissemination delay, so querying it gave times ~2-3h late
-                // (e.g. 15:59 instead of ~13:00). Use activeModel; fall back to ecmwf_ifs.
-                const freshModel = (typeof activeModel === 'string' && activeModel && activeModel !== 'best_match')
-                    ? activeModel
-                    : 'ecmwf_ifs';
-                const metaUrl = `https://api.open-meteo.com/data/${freshModel}/static/meta.json`;
-                const res = await fetch(metaUrl, { cache: 'no-store' });
-                if (!res.ok) throw new Error('meta http ' + res.status);
-                const meta = await res.json();
-                // Fields are Unix timestamps (seconds). availability = when usable on API.
-                const initT = meta.last_run_initialisation_time;
-                const availT = meta.last_run_availability_time;
-                if (typeof initT !== 'number' || typeof availT !== 'number') throw new Error('meta shape');
-
-                const initMs = initT * 1000;
-
-                const fmtMyt = (ms) => new Intl.DateTimeFormat('en-GB', {
-                    timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', hour12: false
-                }).format(new Date(ms));
-
-                // OFFSET (v1.0.290): the reachable metadata reports availability ~2h LATER
-                // than the broadcaster's proven 1/7/13/19 MYT schedule (Open-Meteo's
-                // documented ~2h extra dissemination delay on the 0.25° ECMWF feed). Subtract
-                // it so displayed times match the data the app serves. Tunable dial.
-                const META_DELAY_MS = 2 * 3600 * 1000;
-                const CYCLE_MS = 6 * 3600 * 1000;
-
-                // The metadata gives ONE availability timestamp. Real runs are every 6h, so
-                // derive the schedule from it: step in 6h increments to find the MOST RECENT
-                // availability that has already passed (= the current fresh data) and the
-                // NEXT one still upcoming. (v1.0.291: previous version used the raw timestamp
-                // as "current", which could be two cycles stale and skip the real latest run.)
-                const baseAvail = (availT * 1000) - META_DELAY_MS;
-                let curAvailMs = baseAvail;
-                // Step forward while the next cycle has also already passed.
-                while (curAvailMs + CYCLE_MS <= now) curAvailMs += CYCLE_MS;
-                // If even the base hasn't passed yet (metadata slightly ahead), step back.
-                while (curAvailMs > now) curAvailMs -= CYCLE_MS;
-                const nextAvailMs = curAvailMs + CYCLE_MS;
-
-                // FRESH = the current run landed recently (within this 6h cycle). Since
-                // curAvailMs is by construction the most recent passed availability, the data
-                // is "fresh" when that landing was less than ~6h ago (i.e. we haven't yet
-                // crossed into a stale gap waiting for the next run). Simple and reliable —
-                // no dependence on the model init timestamp.
-                const sinceCurMin = Math.round((now - curAvailMs) / 60000);
-                const fresh = sinceCurMin <= (CYCLE_MS / 60000); // within one cycle
-
-                const availMyt = fmtMyt(curAvailMs);
-                const nextMyt = fmtMyt(nextAvailMs);
-                const minsToNext = Math.round((nextAvailMs - now) / 60000);
-                const toNextStr = minsToNext >= 60
-                    ? `${Math.floor(minsToNext/60)}h ${minsToNext%60}m`
-                    : `${minsToNext}m`;
-                const sinceStr = sinceCurMin >= 60
-                    ? `${Math.floor(sinceCurMin/60)}h ${sinceCurMin%60}m`
-                    : `${sinceCurMin}m`;
-
-                if (fresh) {
-                    setDot('#16a34a');  // green
-                    toast(`已更新 / Fresh ${availMyt} (${sinceStr})`);
-                } else {
-                    setDot('#f59e0b');  // amber
-                    toast(`待更新 / Next ~${nextMyt} (${toNextStr})`);
-                }
-            } catch (e) {
-                // Graceful fallback — never block the broadcaster.
+            const r = await computeModelRunFreshness();
+            if (!r) {
                 setDot('#cbd5e1');  // grey: unknown
                 if (force) toast('状态不可用 / Unavailable', true);
+                return;
+            }
+            const sinceStr = r.sinceMin >= 60
+                ? `${Math.floor(r.sinceMin/60)}h ${r.sinceMin%60}m`
+                : `${r.sinceMin}m`;
+            const toNextStr = r.minsToNext >= 60
+                ? `${Math.floor(r.minsToNext/60)}h ${r.minsToNext%60}m`
+                : `${r.minsToNext}m`;
+            if (r.fresh) {
+                setDot('#16a34a');  // green
+                toast(`已更新 / Fresh ${r.availMyt} (${sinceStr})`);
+            } else {
+                setDot('#f59e0b');  // amber
+                toast(`待更新 / Next ~${r.nextMyt} (${toNextStr})`);
             }
         };
 

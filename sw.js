@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.2.7 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.2.8 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -48,13 +48,22 @@
 // durian is the seed default, every farm was mis-greeted. Added all 14 missing
 // crops (5 languages each) and made the fallback LANGUAGE-AWARE (generic '农友/
 // Petani/Grower' in the user's own language) so the greeting never silently
-// switches to English. Inherits the Cameron SW
+// switches to English. v1.2.8: fixed the broadcast's FALSE '数据较旧 / data
+// stale' warning. The header age came from getLatestModelRun() — a pure clock
+// guess (now-5h floored to 6h) that ignored the actual data and always printed
+// '20:00, 9h ago' at ~5:30 AM even when the 1 AM run had been fetched fresh.
+// Extracted the freshness pill's REAL model-run logic (live Open-Meteo metadata)
+// into computeModelRunFreshness(), now shared by the pill AND the broadcast. The
+// async broadcast handler computes it and passes it in; the header shows the true
+// run time/age and warns ONLY when data is genuinely stale (older than one 6h
+// cycle). Graceful fallback to the clock guess if metadata is unreachable.
+// Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031640';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031700';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
