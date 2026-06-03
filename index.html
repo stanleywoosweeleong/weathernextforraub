@@ -1070,11 +1070,11 @@
             </button>
             <h3 id="edit-modal-title" class="text-lg font-black text-slate-900 mb-4">Edit 修改地点</h3>
             
-            <label id="edit-name-label" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">名字 / Name</label>
+            <label id="edit-name-label" for="edit-name-en" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">名字 / Name</label>
             <input aria-label="English Name" type="text" id="edit-name-en" class="w-input" placeholder="English Name">
             <input aria-label="中文名字" type="text" id="edit-name-zh" class="w-input mt-2" placeholder="中文名字">
             
-            <label id="edit-coords-label" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mt-4 mb-1">GPS 坐标 / Coordinates</label>
+            <label id="edit-coords-label" for="edit-lat" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mt-4 mb-1">GPS 坐标 / Coordinates</label>
             <div class="flex gap-2">
                 <input aria-label="纬度 Lat" type="text" inputmode="decimal" id="edit-lat" class="w-input flex-1" placeholder="纬度 Lat">
                 <input aria-label="经度 Lng" type="text" inputmode="decimal" id="edit-lng" class="w-input flex-1" placeholder="经度 Lng">
@@ -1090,7 +1090,7 @@
             </button>
             <div id="edit-gps-fill-info" class="text-[10px] text-slate-500 text-center mt-1.5 h-3"></div>
 
-            <label id="edit-elev-label" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mt-4 mb-1">海拔 / Elevation (m)</label>
+            <label id="edit-elev-label" for="edit-elev" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mt-4 mb-1">海拔 / Elevation (m)</label>
             <input aria-label="留空用GPS网格值 / Leave blank for GPS grid" type="text" inputmode="numeric" id="edit-elev" class="w-input" placeholder="留空用GPS网格值 / Leave blank for GPS grid">
             <p id="edit-elev-hint" class="text-[10px] text-slate-400 mt-1">留空将使用GPS网格海拔 / Leave blank to use the GPS grid elevation</p>
 
@@ -1160,11 +1160,11 @@
             <h3 id="profile-modal-title" class="text-lg font-black text-slate-900 mb-1">👋 欢迎 / Welcome</h3>
             <p id="profile-modal-intro" class="text-xs text-slate-500 mb-3">输入您的名字，让这个 app 属于您。<br>Enter your name to personalize this app.</p>
             
-            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">显示名字 / Display name</label>
+            <label for="profile-name-input" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">显示名字 / Display name</label>
             <input aria-label="您的名字 / Your name" type="text" id="profile-name-input" class="w-input mb-2" placeholder="您的名字 / Your name" maxlength="40" onkeydown="if(event.key==='Enter') window.submitProfile()">
             <p class="text-[10px] text-slate-400 mb-3">中文、英文、马来文皆可 · Any language works · Max 40 chars</p>
             
-            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">英文/拼音 名字（可选）/ English name (optional)</label>
+            <label for="profile-name-ascii-input" class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">英文/拼音 名字（可选）/ English name (optional)</label>
             <input aria-label="YourName" type="text" id="profile-name-ascii-input" class="w-input mb-1" placeholder="YourName" maxlength="32">
             <p class="text-[10px] text-slate-400 mb-4">仅用于分享截图的文件名（ASCII 字母数字）<br>Used only for shared screenshot filenames (ASCII letters/numbers)</p>
             

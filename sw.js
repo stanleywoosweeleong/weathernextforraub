@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.1.6 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.1.7 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -19,13 +19,16 @@
 // v1.1.6: fixed an Uncaught TypeError (Cannot read 'classList' of null) in
 // toggleHelpCard — the header re-render recreates the help "?" icon span, so the
 // open/close paths now null-guard the icon (icon?.classList) since card and icon
-// are independent DOM nodes. Inherits the Cameron SW
+// are independent DOM nodes. v1.1.7: accessibility — added `for` attributes to
+// the 5 edit/profile-modal <label>s so each associates with its form field
+// (inputs already had aria-labels; this clears the DevTools a11y warning).
+// Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031320';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031335';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
