@@ -1,19 +1,21 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.1.2 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.1.3 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
 // chart scale (VPD_FULL 2.5→4.0) so high lowland afternoon VPD no longer
 // saturates the band and collides dots with labels. v1.1.2: fixed the ET0
 // row header losing its help "?" icon on re-render, and the ET0 help card not
-// switching language with the rest of the UI. Inherits the Cameron SW
+// switching language with the rest of the UI. v1.1.3: VPD chart now draws the
+// midday and 8AM lines in two separate vertical bands (row 54→68px) so the red
+// midday values no longer crowd the faint blue 8AM line/labels. Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031210';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031230';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

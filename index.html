@@ -7545,7 +7545,7 @@
                 <div class="relative bg-white border-b border-slate-200"><div class="row-label-overlay" id="hdr-wvet-${id}" style="color: #b45309;">${cH.wvet}<span class="help-icon-btn" id="help-icon-wvet-${id}" onclick="window.toggleHelpCard('${id}', 'wvet')" title="What is WVET?">?</span></div><div id="help-card-wvet-${id}" class="help-card"></div><div class="info-row" id="row-wvet-${id}" style="min-height: 60px; padding-top: 14px;"></div></div>
                 <div id="ch-past-temp-${id}" class="ch-past-strip" style="display:none;"></div>
                 <div class="relative"><div class="row-label-overlay" id="hdr-temp-${id}"><span style="color:#f97316;">${cH.tHi}</span>/<span style="color:#2563eb;">${cH.tLo}</span> / <span style="color:#06b6d4;">${cH.tDew}</span> <span style="color:#cbd5e1; margin:0 2px;">|</span> <span style="color:#7e22ce;">${cH.tDelta}</span> / <span style="color:#166534;">${cH.tSafe}</span><span class="help-icon-btn" id="help-icon-temp-${id}" onclick="window.toggleHelpCard('${id}', 'temp')" title="What is DeltaT and Safe Hours?">?</span></div><div id="help-card-temp-${id}" class="help-card"></div><div class="info-row" id="row-temp-combined-${id}" style="min-height: 200px; padding-top: 10px;"></div><svg id="trend-layer-temp-${id}" class="trend-layer" height="200"></svg></div>
-                <div class="relative" id="vpd-row-container-${id}" style="margin-top:-38px;"><div class="row-label-overlay" id="hdr-vpd-${id}" style="color:#b45309">${cH.vpd}<span class="help-icon-btn" id="help-icon-vpd-${id}" onclick="window.toggleHelpCard('${id}', 'vpd')" title="What is VPD?">?</span></div><div id="help-card-vpd-${id}" class="help-card"></div><div class="info-row" id="row-vpd-${id}" style="min-height:54px;padding-top:20px;"></div><svg id="trend-layer-vpd-${id}" class="trend-layer" height="54"></svg></div>
+                <div class="relative" id="vpd-row-container-${id}" style="margin-top:-38px;"><div class="row-label-overlay" id="hdr-vpd-${id}" style="color:#b45309">${cH.vpd}<span class="help-icon-btn" id="help-icon-vpd-${id}" onclick="window.toggleHelpCard('${id}', 'vpd')" title="What is VPD?">?</span></div><div id="help-card-vpd-${id}" class="help-card"></div><div class="info-row" id="row-vpd-${id}" style="min-height:68px;padding-top:20px;"></div><svg id="trend-layer-vpd-${id}" class="trend-layer" height="68"></svg></div>
                 <div class="relative"><div class="row-label-overlay" id="hdr-leafwet-${id}" style="color:#0d9488">${cH.leafwet} <span id="lwsrc-${id}" class="lw-src-tag"></span><span class="help-icon-btn" id="help-icon-leafwet-${id}" onclick="window.toggleHelpCard('${id}', 'leafwet')" title="What is Leaf Wetness?">?</span></div><div id="help-card-leafwet-${id}" class="help-card"></div><div class="info-row" id="row-leafwet-${id}" style="min-height:42px;padding-top:20px;"></div><svg id="trend-layer-leafwet-${id}" class="trend-layer" height="42"></svg></div>
                 <div class="relative bg-slate-50/10" id="wind-row-container-${id}" style="z-index:10;"><div class="row-label-overlay" id="hdr-wind-${id}">${cH.wind}</div><div class="info-row" id="row-wind-${id}" style="min-height:60px;padding-top:14px;"></div></div>
                 <div class="relative bg-slate-50/10"><div class="row-label-overlay" id="hdr-cloud-${id}">${cH.cloud}<span class="help-icon-btn" id="help-icon-cloud-${id}" onclick="window.toggleHelpCard('${id}', 'cloud')" title="What is Cloud % and CB Risk?">?</span></div><div id="help-card-cloud-${id}" class="help-card"></div><div class="info-row" id="row-cl-high-${id}" style="min-height:42px;padding-top:14px;"></div><div class="info-row" id="row-cl-mid-${id}" style="min-height:28px;"></div><div class="info-row" id="row-cl-low-${id}" style="min-height:28px;"></div></div>
@@ -8426,31 +8426,35 @@
                 const vpdAMVals = days.map(d => (typeof d.vpdAM === 'number') ? d.vpdAM : null);
                 if (vpdVals.some(v => v !== null) || vpdAMVals.some(v => v !== null)) {
                     // LOWLAND scale: afternoon-peak VPD in the hot lowlands routinely
-                    // reaches 2–3 kPa (vs ~1.5 max in the cool highlands), so the old
-                    // 2.5 ceiling saturated every high value at the top of the band and
-                    // collided the dots with their labels. 4.0 spreads lowland values
-                    // through the band with headroom for the label above each dot.
+                    // reaches 2–3 kPa (vs ~1.5 max in the cool highlands), so 4.0 is the
+                    // band ceiling. To stop the two lines (midday + 8AM) from crowding,
+                    // each gets its OWN vertical zone within the taller 64px row:
+                    //   • Midday line lives in the UPPER band (y 26..40), labels ABOVE it.
+                    //   • 8AM dashed line lives in a LOWER band (y 50..58), labels BELOW it.
+                    // This keeps the prominent red midday values clear of the faint blue
+                    // 8AM line and its labels — no more overlap.
                     const VPD_FULL = 4.0;             // top of fixed scale (lowland)
-                    const VPD_TOP = 22, VPD_BOTTOM = 36;
-                    const vy = (v) => VPD_TOP + (1 - Math.min(v, VPD_FULL) / VPD_FULL) * (VPD_BOTTOM - VPD_TOP);
+                    const PM_TOP = 26, PM_BOTTOM = 40;   // midday line band
+                    const AM_TOP = 50, AM_BOTTOM = 58;   // 8AM line band (separate, lower)
+                    const vyPM = (v) => PM_TOP + (1 - Math.min(v, VPD_FULL) / VPD_FULL) * (PM_BOTTOM - PM_TOP);
+                    const vyAM = (v) => AM_TOP + (1 - Math.min(v, VPD_FULL) / VPD_FULL) * (AM_BOTTOM - AM_TOP);
                     const vpdColor = (v) => v < 0.4 ? "#2563eb" : v <= 1.2 ? "#16a34a" : v <= 1.8 ? "#d97706" : "#dc2626";
 
-                    // ---- 8AM line first (drawn underneath): faint blue, small dots, labels BELOW ----
+                    // ---- 8AM line first (drawn underneath): faint blue, small dots, labels BELOW its own band ----
                     let amP = "";
                     days.forEach((d, i) => {
                         const v = vpdAMVals[i];
                         if (v === null) return;
-                        const x = columnCenters[i], y = vy(v);
+                        const x = columnCenters[i], y = vyAM(v);
                         amP += (amP === "" ? "M " : " L ") + x + " " + y;
                         const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                         c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", "1.8");
                         c.setAttribute("fill", "#60a5fa"); c.setAttribute("opacity", "0.7");
                         svgVPD.appendChild(c);
-                        // 8AM value label placed BELOW the dotted line (faint blue, small) so it
-                        // never collides with the midday labels (which sit on/above their line).
+                        // 8AM value label below its own (lower) line, faint blue, small.
                         const amTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         amTxt.setAttribute("x", x);
-                        amTxt.setAttribute("y", 50);   // dedicated baseline below the band (row is 54px)
+                        amTxt.setAttribute("y", y + 8);   // below the 8AM line
                         amTxt.setAttribute("text-anchor", "middle"); amTxt.setAttribute("font-size", "7.5");
                         amTxt.setAttribute("font-weight", "800"); amTxt.setAttribute("fill", "#60a5fa");
                         amTxt.textContent = v.toFixed(1); svgVPD.appendChild(amTxt);
@@ -8463,12 +8467,12 @@
                         svgVPD.appendChild(aml);
                     }
 
-                    // ---- Midday line on top: band-colored dots + labels (the prominent read) ----
+                    // ---- Midday line on top: band-colored dots + labels ABOVE (the prominent read) ----
                     let vpdP = "";
                     days.forEach((d, i) => {
                         const v = vpdVals[i];
                         if (v === null) return;
-                        const x = columnCenters[i], y = vy(v);
+                        const x = columnCenters[i], y = vyPM(v);
                         vpdP += (vpdP === "" ? "M " : " L ") + x + " " + y;
                         const col = vpdColor(v);
                         const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -8476,9 +8480,9 @@
                         c.setAttribute("fill", col); svgVPD.appendChild(c);
                         const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txt.setAttribute("x", x);
-                        // Midday label always ABOVE its dot — the area below the band is now
-                        // reserved for the 8AM labels, so keep these two label rows separated.
-                        txt.setAttribute("y", y - 4);
+                        // Midday label always ABOVE its dot, in its own upper band — well
+                        // clear of the 8AM line and labels in the lower band.
+                        txt.setAttribute("y", y - 5);
                         txt.setAttribute("text-anchor", "middle"); txt.setAttribute("font-size", "8.5");
                         txt.setAttribute("font-weight", "950"); txt.setAttribute("fill", col);
                         txt.textContent = v.toFixed(1); svgVPD.appendChild(txt);
