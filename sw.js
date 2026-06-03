@@ -1,9 +1,17 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.0.158 — Firestore write retry-with-backoff + a11y labels. bump CACHE_VERSION on each release
+// Version 1.1.0 — LOWLAND RAUB ARCHITECTURE UPGRADE. Rebased weathernextforraub
+// onto the Cameron Highlands architecture (microclimate disease-risk engine,
+// fog engine, 29-crop master list) and recalibrated everything for hot lowland
+// conditions: elevation amplifier neutralized, fog→disease coupling reduced,
+// disease temperature bands shifted up to lowland pathogen reality, lowland
+// zone model (riverine/lowvalley/openplain/coastal), 18 Raub seed farms.
+// Inherits the Cameron SW improvements: inlined pre-built Tailwind (no CDN
+// runtime), and rule #1 returning a bare `return` for Firebase SDK module
+// requests (blank-screen fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202605300002';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031107';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
@@ -17,8 +25,8 @@ const SHELL_ASSETS = [
   './icon-512.png',
   './favicon-32.png',
   './apple-touch-icon.png',
-  './tailwind.css',
-  // External CDN assets — cache so app loads fully offline after first visit
+  // External CDN assets — cache so app loads fully offline after first visit.
+  // (Tailwind is no longer here — it's now pre-built and inlined in index.html.)
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
 
@@ -31,9 +39,9 @@ self.addEventListener('install', (event) => {
     caches.open(SHELL_CACHE)
       .then((cache) => {
         // Use addAll with a fallback per-item to survive a single failure.
-        // Cross-origin CDN assets (cdnjs html2canvas) often lack CORS headers
-        // for fetch() pre-caching. Use 'no-cors' mode for them — produces an opaque
-        // response which is cacheable but not introspectable (fine for static assets).
+        // Cross-origin CDN assets (cdnjs) often lack CORS headers for fetch()
+        // pre-caching. Use 'no-cors' mode for them — produces an opaque response
+        // which is cacheable but not introspectable (fine for static assets).
         return Promise.allSettled(
           SHELL_ASSETS.map((url) => {
             const isCrossOrigin = url.startsWith('http') && !url.startsWith(self.location.origin);
@@ -82,25 +90,26 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (request.method !== 'GET') return;
 
-  // 1. Firebase, Gemini, Google APIs — NEVER cache (auth + real-time)
+  // 1. Firebase, Gemini, Google APIs — do NOT intercept at all.
+  //
+  // This rule used to do event.respondWith(fetch(request).catch(... JSON 503 ...)).
+  // That was a bug: it also caught the Firebase SDK JavaScript module requests
+  // (gstatic.com/firebasejs/...). When such a request failed, the SW handed the
+  // browser a JSON body; the browser then tried to execute JSON as an ES module,
+  // which throws and kills the entire type="module" script — a fully blank page,
+  // repeated on every load because the installed SW kept doing it.
+  //
+  // Fix: don't substitute anything for these requests. Returning here (with no
+  // event.respondWith) lets the browser fetch them natively. A real network
+  // failure becomes a normal rejected fetch, which the app already handles —
+  // never a poisoned JSON module.
   if (
     url.hostname.includes('firebaseio.com') ||
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('firebase') ||
     (url.hostname.includes('gstatic.com') && url.pathname.includes('firebasejs'))
   ) {
-    // IMPORTANT: do NOT substitute a JSON body on failure here.
-    // These requests include the Firebase SDK *JavaScript modules*
-    // (gstatic.com/firebasejs/...). If a fetch fails and the SW hands
-    // back a JSON 503, the browser tries to execute JSON as an ES module,
-    // which throws and kills the entire type="module" script — producing
-    // a fully blank page. Instead we just pass the request straight to
-    // the network. A genuine network error is then a normal failed
-    // request that the app's own try/catch around Firebase can handle,
-    // and — critically — a failed *script* request no longer poisons
-    // module execution. (For data/XHR requests to these hosts the app
-    // already handles rejected fetches gracefully.)
-    return; // no respondWith — browser performs the fetch natively
+    return;
   }
 
   // 2. Open-Meteo weather API — network-first with cache fallback (stale weather > no weather)
@@ -154,7 +163,7 @@ self.addEventListener('fetch', (event) => {
 
   // 4. CDN scripts (html2canvas) — cache-first (rarely changes).
   // Cross-origin CDNs without CORS headers need no-cors mode to be cacheable.
-  if (url.hostname.includes('cdnjs.cloudflare.com')) {
+  if (url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('cdn.tailwindcss.com')) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) {
