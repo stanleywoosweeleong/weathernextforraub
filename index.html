@@ -1978,21 +1978,36 @@
         // For Sabah specifically, sort latitude bottom-to-top (south-to-north) per
         // Stanley's request — recipients should encounter Keningau (5.33°N) before
         // Kionsom (5.99°N) since Keningau is more typical reference point.
+        // Pure GPS geographic sort for the WhatsApp BROADCAST report, matching the
+        // OLD Raub ordering the audience is used to: NORTH→SOUTH first (descending
+        // latitude), then WEST→EAST (ascending longitude) as the tiebreaker, name
+        // last. Deliberately NOT homeListSort — the lowland farms are all ~40–300m,
+        // so the home list's elevation-high→low primary ordering is meaningless here
+        // and would scramble the familiar geographic reading order. The on-screen
+        // list keeps its own ordering; only the broadcast uses this.
+        const broadcastGeoSort = (a, b) => {
+            if (!a || !b) return 0;
+            // NORTH → SOUTH: higher latitude first.
+            if (Math.abs((b.lat ?? 0) - (a.lat ?? 0)) > 0.0001) return (b.lat ?? 0) - (a.lat ?? 0);
+            // WEST → EAST: lower longitude first.
+            if (Math.abs((a.lng ?? 0) - (b.lng ?? 0)) > 0.0001) return (a.lng ?? 0) - (b.lng ?? 0);
+            const nameA = (renamedLocations[a.id]?.en || a.en || '').toLowerCase();
+            const nameB = (renamedLocations[b.id]?.en || b.en || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        };
+
         const sortStableLocations = (ids) => {
-            // Broadcast listing order now MATCHES the home screen (and detail view):
-            // it delegates to the shared homeListSort comparator (sort-mode + elevation
-            // high→low + geography), instead of the old state/west-east-only geographic
-            // sort. Resolving via getAllLocations() (not just STABLE_LOCATIONS) so
-            // user-added farms are ordered too, not left unsorted.
-            // NOTE: homeListSort is a module-scope const defined later in the file; this
-            // function is only ever CALLED well after that definition, so it's available.
+            // Broadcast listing order uses the dedicated pure-GPS geographic sort
+            // (NORTH→SOUTH, then WEST→EAST) so the WhatsApp report matches the old
+            // Raub ordering the audience knows. Resolved via getAllLocations() (not
+            // just STABLE_LOCATIONS) so user-added farms are ordered too.
             const all = (typeof getAllLocations === 'function') ? getAllLocations() : [];
             const byId = {};
             for (const loc of all) byId[loc.id] = loc;
             return ids.slice().sort((a, b) => {
                 const locA = byId[a]; const locB = byId[b];
                 if (!locA || !locB) return 0;
-                return (typeof homeListSort === 'function') ? homeListSort(locA, locB) : 0;
+                return broadcastGeoSort(locA, locB);
             });
         };
 
@@ -10155,7 +10170,13 @@
                 let neededIds = [];
                 if (mode === 'favorites') {
                     const visible = getAllLocations().filter(l => !hiddenIds.includes(l.id));
-                    neededIds = (favoriteIds || []).filter(id => visible.some(l => l.id === id));
+                    const favVisible = (favoriteIds || []).filter(id => visible.some(l => l.id === id));
+                    // Sort the pre-fetch order to match the eventual broadcast order
+                    // (buildBroadcastText sorts favorites the same way), so fetch and
+                    // display order are consistent across all three broadcast modes.
+                    neededIds = (typeof sortStableLocations === 'function')
+                        ? sortStableLocations(favVisible)
+                        : favVisible;
                 } else {
                     // "All" pre-fetch — use getAllLocations() since user-added
                     // locations now live in customLocations, not STABLE_LOCATIONS.

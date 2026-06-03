@@ -1,6 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
-// Version 1.2.1 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
+// Version 1.2.3 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
 // the ms/ta/my/zh help-card text (climate/terrain wording), and fixed the VPD
@@ -33,13 +33,21 @@
 // now reads ACTUAL root-zone soil moisture (9–27cm) as its heaviest driver
 // (was a rain-only proxy) — so it stays elevated for days after rain when the
 // surface is dry but roots are still saturated (the active infection window).
-// Graceful fallback to the rain-proxy when soil data is absent. Inherits the Cameron SW
+// Graceful fallback to the rain-proxy when soil data is absent. v1.2.2: the
+// WhatsApp BROADCAST report is now sorted by pure GPS — NORTH→SOUTH then
+// WEST→EAST — matching the old Raub order the audience knows (was inheriting
+// the home list's elevation-high→low sort, meaningless in the flat lowlands).
+// The on-screen list keeps its own ordering; only the broadcast changed.
+// Applies to ALL THREE broadcast modes (favorites 3-day, all-stable 1-day,
+// all-stable hourly bilingual). v1.2.3: also sorted the favorites PRE-FETCH
+// order to match, so fetch and display order are consistent across all modes.
+// Inherits the Cameron SW
 // improvements: inlined pre-built Tailwind (no CDN runtime), and rule #1
 // returning a bare `return` for Firebase SDK module requests (blank-screen
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031420';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606031455';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
