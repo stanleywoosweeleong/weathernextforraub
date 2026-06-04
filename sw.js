@@ -1,5 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
+// Version 1.2.9 — LOWLAND RAUB. Added per-farm coordinates to the AI prompt (kept location name). bump CACHE_VERSION on each release
 // Version 1.2.8 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
 // list) and recalibrated for hot lowland conditions. v1.1.1: lowland-localized
@@ -63,7 +64,7 @@
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606031700';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606032020';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

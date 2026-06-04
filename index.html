@@ -5072,7 +5072,10 @@
             if (loc) {
                 const zoneTxt = ({ riverine: 'a river-valley bottom that pools morning mist and holds leaf wetness late', lowvalley: 'a sheltered lowland basin with poor airflow and slow morning dry-off', openplain: 'an open lowland plain — the main growing belt', coastal: 'breezy, well-aired ground that dries quickly' })[loc.zone] || 'a lowland farm';
                 const elevTxt = loc.elev ? `${loc.elev} m elevation` : 'lowland elevation';
-                chCtx = `Location context: this is a Raub-district (Pahang, Malaysia) lowland farm at ${elevTxt}, in ${zoneTxt}. ` +
+                const coordTxt = (typeof loc.lat === 'number' && typeof loc.lng === 'number')
+                    ? `at coordinates ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)} (use these to judge the regional setting — e.g. monsoon exposure, coastal vs inland, which part of Peninsular/East Malaysia — without assuming it is any other specific place)`
+                    : '';
+                chCtx = `Location context: this is a Raub-district (Pahang, Malaysia) lowland farm ${coordTxt ? coordTxt + ', ' : ''}at ${elevTxt}, in ${zoneTxt}. ` +
                         `This is hot, humid lowland Malaysia (typically 23–33°C) with heavy convective rain, brief morning radiation/river fog that burns off after sunrise, and very high overnight humidity — conditions that drive warm-climate diseases above all ANTHRACNOSE, plus downy mildew and late blight under sustained rain, and powdery mildew in drier spells. Cool-climate gray mould (Botrytis) is far less aggressive here than in the highlands. ` +
                         `Weigh leaf-wetness duration, rain re-wetting and high-RH persistence heavily, not just whether it rained. Tailor spray timing, airflow and drainage advice to hot, humid lowland conditions rather than to cool highland conditions. `;
                 // Fold in the app's computed disease risk for today, if available.
