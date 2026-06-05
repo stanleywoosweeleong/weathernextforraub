@@ -1,5 +1,154 @@
 // ============================================================
 // WeatherNext Service Worker
+// Version 1.3.14 — LOWLAND RAUB. ROUND-2 SWEEP: probability vs measurable-hour.
+// A second adversarial sweep (favourites multi-day, confidence wording, boundaries)
+// found one residual contradiction: a low headline probability (e.g. 雨 20%) sitting
+// above a real heavy rain hour (3pm 大雨 6mm) AND the new "models agree: rain
+// likely" marker — the v1.3.12 floor only nudged pp when rv≥1mm, so a low-pp/zero-rv
+// day with a real rain HOUR slipped through. Extended the floor to the concrete
+// hourly signal: scan the broadcast window once for the heaviest displayable hour,
+// then floor the DISPLAYED probability — rv≥1mm→≥5%, any ≥0.7mm hour→≥60%, any ≥2mm
+// hour→≥80% (capped 100, never lowered). Headline now always agrees with the rain
+// shown below it and with the confidence marker. The same single hourly scan also
+// drives the trace-tag suppression (no '微量' beside a real rain hour). Verified:
+// light-drizzle days floor gently to 60% (not over-claimed), genuinely dry days stay
+// put, past-storm suppression and trace/drizzle reconciliation all still hold.
+// bump CACHE_VERSION on each release
+// Version 1.3.13 — LOWLAND RAUB. CONFIDENCE MARKER NOW SAYS WHAT IT AGREES ON.
+// The high-agreement marker was a bare "~ 模型一致 / Models agree" — meaningless in
+// isolation (agree on WHAT?), left hanging with no referent. Now it states the
+// actionable takeaway for the day and always matches the rest of the message:
+//   wet day → "~ 模型一致：很可能有雨 / Models agree: rain is likely"
+//   dry day → "~ 模型一致：大致无雨 / Models agree: mostly dry"
+// 'wet' = pp ≥ 50% OR rv ≥ 1mm OR a measurable (≥0.7mm) hour exists; else 'dry'.
+// So when models agree rain is likely, the marker reinforces the rain shown in the
+// hourly list / drizzle line below it instead of floating. Bilingual mode adds the
+// Malay reading (guarded against ms-owner duplication). Storm days still fold
+// confidence into the storm-maybe line's (较确定)/(不确定) tag as before.
+// bump CACHE_VERSION on each release
+// Version 1.3.12 — LOWLAND RAUB. CONTRADICTION SWEEP (3 fixes). An adversarial
+// permutation sweep surfaced three message contradictions:
+//  (1) PAST STORM WINDOW: an afternoon send showed "可能有暴雨时段 8AM-10AM" for a
+//      storm window that had already passed (plus the matching storm-maybe hourly
+//      line). Gated BOTH the summary storm clause and the hourly storm-maybe line
+//      to the broadcast window — they now appear only when the trigger window
+//      overlaps the hours being broadcast (same principle as the fog gate).
+//  (2) 雨 0% WITH RAIN: the daily probability (pp) and amount (rv) are separate
+//      model fields and occasionally pp rounds to 0% on a day with real rain
+//      (rv ≥ 1mm / measurable hours), printing "雨 0%" above "(5mm/D)". Now floors
+//      the DISPLAYED probability to 5% when rain is genuinely present — honest
+//      ">0%", never an invented high number.
+//  (3) MISLEADING 微量: the trace tag fired on pp≥50% + rv<1mm even when a single
+//      hour actually showed measurable (≥0.7mm) rain. Now suppressed when the
+//      window contains a displayable hour; still shown for genuinely sub-floor days.
+// bump CACHE_VERSION on each release
+// Version 1.3.11 — LOWLAND RAUB. Reworded the ms thin-rain line to 'Mungkin hujan
+// merintik-rintik' (was the longer 'Hujan renyai sepanjang hari (tiada jam hujan
+// lebat)') — the natural Malay match for 丝丝细雨. All three thin-rain lines now
+// share the same brief 'possible drizzle' register: zh 可能有丝丝细雨 / en Possible
+// drizzle through the day / ms Mungkin hujan merintik-rintik.
+// bump CACHE_VERSION on each release
+// Version 1.3.10 — LOWLAND RAUB. Reworded the en thin-rain line to 'Possible
+// drizzle through the day' (was 'Light rain spread through the day (no heavy
+// hour)') — 'drizzle' is the lighter register that fits this sub-0.7mm/h case and
+// avoids clashing with the hourly 'Light Rain' tier. zh (可能有丝丝细雨)/ms unchanged.
+// bump CACHE_VERSION on each release
+// Version 1.3.9 — LOWLAND RAUB. Reworded the zh thin-rain line to the more natural
+// '可能有丝丝细雨' (was '全天零星小雨（无明显大雨时段）'). en/ms unchanged.
+// bump CACHE_VERSION on each release
+// Version 1.3.8 — LOWLAND RAUB. THIN-RAIN RECONCILIATION. A clarity sweep across
+// many simulated permutations surfaced a contradiction: when the daily summary
+// showed real rain (e.g. "雨 80% (8mm/D)") but the rain was spread so thin that no
+// single hour cleared the 0.7mm hourly display floor, the hourly section printed a
+// flat "没有下雨 / No rain" — directly contradicting the line above it. Added a
+// 'spreadThin' vocab line (zh/en/ms): when there's no displayable hour but the day
+// indicates meaningful rain (rv ≥ 1mm OR pp ≥ 50%), the hourly now reads "全天零星
+// 小雨（无明显大雨时段） / Light rain spread through the day (no heavy hour) / Hujan
+// renyai sepanjang hari (tiada jam hujan lebat)" instead of denying rain. Genuinely
+// dry days (low rv AND low pp) still say "no rain"; storm-flagged days still use the
+// storm-maybe line (that branch takes priority). bump CACHE_VERSION on each release
+// Version 1.3.7 — LOWLAND RAUB. SINGLE-LANGUAGE MALAY HOURLY FIX. In a
+// single-language broadcast sent with a MALAY greeting (and no per-location
+// override), the daily summary rendered in Malay but the HOURLY rain labels fell
+// back to Chinese — the top-label picker only branched English-vs-Chinese
+// (locLang==='en'?cls.en:cls.zh), never Malay. So a Malay broadcast showed
+// "2pm 中雨" instead of "2pm Hujan sederhana". Added the Malay branch to the
+// hourly label, the no-rain line, and the no-data line. Also guarded all bilingual
+// second-pass lines (hourly, no-rain, no-data, storm-maybe) with locLang!=='ms' so
+// a Malay-owner farm in bilingual mode doesn't double its Malay text — matching
+// the fog-tag guard from v1.3.1. Chinese/English single-language and normal
+// bilingual output unchanged. bump CACHE_VERSION on each release
+// Version 1.3.6 — LOWLAND RAUB. CROSSOVER-NOTE EMOJI REMOVED. Dropped the 🕛 clock
+// glyph from the afternoon midnight-crossover note (zh/en/ms). Same old-device
+// compatibility reasoning as the fog tags (v1.3.5): 🕛 is Emoji 1.0 (2015) and
+// shows as a blank box on older OSes across the WhatsApp audience. The note now
+// reads as plain text ('12am 之后为明天预报' / 'Selepas 12am untuk ramalan esok' /
+// 'After 12am is tomorrow's forecast'). bump CACHE_VERSION on each release
+// Version 1.3.5 — LOWLAND RAUB. FOG TAG EMOJI REMOVED. Dropped the 🌫️ glyph from
+// the broadcast fog tags (all 5 wording variants × zh/en/ms). The fog emoji is
+// Emoji 1.0 (2015) and renders as a blank box / tofu on older device OSes still
+// in use across the WhatsApp recipient base (pre-2016 Android, some feature
+// phones) — a blank box next to a safety line is worse than none. The wording is
+// self-explanatory and renders identically everywhere; this also matches the rest
+// of the broadcast (storm clause and hourly rain lines already carry no emoji).
+// Only the broadcast VOCAB tags changed — the in-app on-screen fog banner and the
+// disease-list icon keep their glyphs (rendered by the app, not sent over
+// WhatsApp). bump CACHE_VERSION on each release
+// Version 1.3.4 — LOWLAND RAUB. FOG-BEFORE-STORM ORDER. The daily summary listed
+// the afternoon storm window ABOVE the dawn fog tag — backwards chronologically
+// (fog is a dawn hazard, the storm an afternoon one). Reordered so the fog tag
+// appears first, then the storm clause, matching the order events actually occur
+// through the day. The old trailing "," that linked the rain summary to the storm
+// clause is dropped (fog now sits between them); storm-only and fog-only days
+// still read cleanly. bump CACHE_VERSION on each release
+// Version 1.3.3 — LOWLAND RAUB. FAVOURITES OVERNIGHT DEDUP. In the favourites
+// (3-day) broadcast sent in the afternoon (12 PM–6 PM), day 1's smart window ran
+// through tomorrow 03:00 while day 2 already rendered the FULL tomorrow — so
+// tomorrow's 00:00–03:00 rain hours were listed TWICE: once as the day-1
+// "明天 12am…" tail, then again at the top of the day-2 block. Added a capToToday
+// option to computeWindow; favourites day 1 now stops at today 23:00 (no tomorrow
+// spill). Those hours appear once, under the 明天: heading where they belong. The
+// 1-day modes (allStable / allStableHourly) are unchanged — they have no day-2 to
+// carry the overnight hours, so their spill-to-3am is the only place those hours
+// appear and must stay. bump CACHE_VERSION on each release
+// Version 1.3.2 — LOWLAND RAUB. AFTERNOON MIDNIGHT-CROSSOVER NOTE. Afternoon
+// broadcasts (12 PM–6 PM MYT) use a smart hourly window that runs from the
+// current hour through TOMORROW 03:00, so the list ends with 12am/1am/2am/3am
+// hours belonging to tomorrow. Those lines already carry a 明天/Esok prefix, but
+// some farmers still read the small-hours tail as tonight. Added a short header
+// note under the greeting — '🕛 12am 之后为明天预报' / 'Selepas 12am untuk ramalan
+// esok' / 'After 12am is tomorrow's forecast' — in the greeting language. Shown
+// ONLY when the window actually crosses midnight (afternoon sends); morning
+// sends end at 23:00 and after-6PM sends are wholly tomorrow (already tagged
+// (明日)/(Esok)/(Tomorrow) in the header). bump CACHE_VERSION on each release
+// Version 1.3.1 — LOWLAND RAUB. BILINGUAL FOG LANGUAGE FIX. In the daily
+// bilingual broadcast (allStableHourly) the daily summary line — and the fog tag
+// riding on it — was emitted in ONE language: getLocLang(), which falls back to
+// the broadcaster's GREETING-language pick when a location has no per-location
+// override. So picking a Malay greeting made a Chinese-owner farm receive a
+// Malay-ONLY fog warning, with no Chinese and no translation — the opposite of
+// what the bilingual report is for. Two-part fix: (1) in bilingual mode the
+// PRIMARY language is now the owner's (per-location override, else app default
+// zh), never the transient greeting choice; (2) the fog tag is emitted in that
+// primary language PLUS a Malay translation below (matching the hourly top+Malay
+// pattern), skipping the duplicate when the location is already Malay. The
+// window-aware gating from v1.3.0 also now applies in bilingual mode, so the
+// past-dawn-fog problem is fixed here too. Single-language modes (favorites,
+// allStable) are unchanged — there the greeting pick correctly IS the message
+// language. bump CACHE_VERSION on each release
+// Version 1.3.0 — LOWLAND RAUB. BROADCAST FOG FIX. The dawn-fog tag in the
+// WhatsApp broadcast was driven by computeFog scoring the WHOLE 24h day, so an
+// afternoon broadcast (e.g. just after 1 PM) printed "🌫️ 清晨浓雾 — 小心驾驶 /
+// dense dawn fog — drive slow" for a dawn that had ALREADY PASSED. Sitting right
+// under the greeting, recipients read it as a forecast for the hours ahead, then
+// the smart-window hourly list below (1 PM → 3 AM tomorrow) showed no morning at
+// all — confusing. Fix: buildDayLine now takes the same window options the hourly
+// timeline uses and only emits the fog tag when foggy hours actually fall INSIDE
+// the broadcast window. Morning broadcasts still warn (dawn ahead); afternoon
+// broadcasts no longer warn about a past dawn. Full-day future days (favorites
+// days 2-3) keep the dawn tag since their whole day is upcoming. The dawn-hour
+// count that drives the "drive slow" severity wording is also now intersected
+// with the window. bump CACHE_VERSION on each release
 // Version 1.2.9 — LOWLAND RAUB. Added per-farm coordinates to the AI prompt (kept location name). bump CACHE_VERSION on each release
 // Version 1.2.8 — LOWLAND RAUB. v1.1.0 rebased onto the Cameron Highlands
 // architecture (microclimate disease-risk engine, fog engine, 29-crop master
@@ -64,7 +213,7 @@
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606050000';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606051900';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
