@@ -1,5 +1,6 @@
 // ============================================================
 // WeatherNext Service Worker
+// Version 1.3.15 — TWO fog fixes (ported from Cameron v1.0.310/311). (1) Broadcast fog tag now matches the detail screen: it derives its band from the WORST in-window VISIBILITY (computeFog thresholds <=200m dense, <=1000m fog) instead of computeFog's bandKey, which could read 'dense' from the humidity/saturation composite even when visibility was fine — so a dawn broadcast no longer says '浓雾/dense fog' on a morning the detail index shows clear. Humidity alone can flag 'fog' only when no visibility reading exists, never 'dense'. (2) Dropped the misleading 'overnight/夜间/malam' reference from the low-dawn-count fog wording (a 5–7 AM reader doesn't care about last midnight); now day-agnostic morning wording: zh '清晨有浓雾'/'清晨有雾'; en 'Dense fog in the morning'/'Foggy spells in the morning'; ms 'Kabus tebal waktu pagi'/'Berkabus waktu pagi'. amFog>=2 dawn-driving warnings unchanged. bump CACHE_VERSION on each release
 // Version 1.3.14 — LOWLAND RAUB. ROUND-2 SWEEP: probability vs measurable-hour.
 // A second adversarial sweep (favourites multi-day, confidence wording, boundaries)
 // found one residual contradiction: a low headline probability (e.g. 雨 20%) sitting
@@ -213,7 +214,7 @@
 // fix). bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforraub-202606051900';
+const CACHE_VERSION = 'wnext-weathernextforraub-202606062153';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

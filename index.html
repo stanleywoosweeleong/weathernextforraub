@@ -9518,8 +9518,8 @@
                     // box on older device OSes common across the WhatsApp recipient base;
                     // the wording is self-explanatory and renders identically everywhere.
                     fog: (band, amFog) => {
-                        if (band === 'dense') return amFog >= 2 ? 'Dense dawn fog — drive slow' : 'Dense fog likely (overnight/dawn)';
-                        if (band === 'fog')   return amFog >= 2 ? 'Foggy dawn — low visibility' : 'Foggy spells (mostly overnight/dawn)';
+                        if (band === 'dense') return amFog >= 2 ? 'Dense dawn fog — drive slow' : 'Dense fog in the morning';
+                        if (band === 'fog')   return amFog >= 2 ? 'Foggy dawn — low visibility' : 'Foggy spells in the morning';
                         return null;
                     },
                     trace: 'trace only',
@@ -9548,8 +9548,8 @@
                         return '极端降雨';
                     },
                     fog: (band, amFog) => {
-                        if (band === 'dense') return amFog >= 2 ? '清晨浓雾 — 小心驾驶' : '夜间/清晨有浓雾';
-                        if (band === 'fog')   return amFog >= 2 ? '清晨有雾 — 能见度低' : '夜间/清晨间中有雾';
+                        if (band === 'dense') return amFog >= 2 ? '清晨浓雾 — 小心驾驶' : '清晨有浓雾';
+                        if (band === 'fog')   return amFog >= 2 ? '清晨有雾 — 能见度低' : '清晨有雾';
                         return null;
                     },
                     trace: '微量',
@@ -9574,8 +9574,8 @@
                         return 'Hujan Ekstrem';
                     },
                     fog: (band, amFog) => {
-                        if (band === 'dense') return amFog >= 2 ? 'Kabus tebal subuh — pandu perlahan' : 'Kabus tebal (malam/subuh)';
-                        if (band === 'fog')   return amFog >= 2 ? 'Subuh berkabus — penglihatan rendah' : 'Berkabus (malam/subuh)';
+                        if (band === 'dense') return amFog >= 2 ? 'Kabus tebal subuh — pandu perlahan' : 'Kabus tebal waktu pagi';
+                        if (band === 'fog')   return amFog >= 2 ? 'Subuh berkabus — penglihatan rendah' : 'Berkabus waktu pagi';
                         return null;
                     },
                     trace: 'sedikit sahaja',
@@ -9871,12 +9871,26 @@
                                 const dayBase = dayIdx * 24;
                                 let fogInWindow = false;
                                 let amFogInWindow = 0;
+                                // VISIBILITY CONSISTENCY FIX (v1.3.15): the broadcast fog
+                                // tag must agree with what the farmer sees on the detail
+                                // screen. The detail fog INDEX is driven by actual
+                                // visibility (worstVis); but computeFog's bandKey can read
+                                // 'dense' purely from the humidity/saturation composite
+                                // (fog>=0.8 via near-dewpoint air) even when visibility is
+                                // fine. That mismatch made a 5 AM broadcast say "浓雾/dense
+                                // fog" on a morning the detail screen showed as clear.
+                                // Fix: derive the tag's band from the WORST in-window
+                                // VISIBILITY, using computeFog's own thresholds (<=200m
+                                // dense, <=1000m fog). If visibility never drops into the
+                                // fog range in-window, emit no tag — like the detail index.
+                                let winWorstVis = Infinity;
                                 if (Array.isArray(_f.hourly)) {
                                     for (const hr of _f.hourly) {
                                         if (hr.fog < 0.5) continue;
                                         const globalHr = dayBase + hr.i;   // hr.i is 0–23 within the day
                                         if (globalHr >= winStart && globalHr < winEnd) {
                                             fogInWindow = true;
+                                            if (typeof hr.vis === 'number' && hr.vis < winWorstVis) winWorstVis = hr.vis;
                                             // Re-count dawn (5–9am) fog hours that are also in-window,
                                             // so amFog-driven "dense dawn fog — drive slow" wording
                                             // only fires when the dawn hours are genuinely ahead.
@@ -9885,25 +9899,27 @@
                                         }
                                     }
                                 }
-                                if (fogInWindow) {
-                                    // BILINGUAL FOG FIX (v1.3.1): in the daily bilingual
-                                    // mode (allStableHourly) the summary line — and thus the
-                                    // fog tag — was emitted in ONE language only: getLocLang(),
-                                    // which falls back to the broadcaster's GREETING-language
-                                    // choice when a location has no per-location override. So a
-                                    // Chinese-owner farm got a Malay-ONLY fog warning whenever
-                                    // the broadcaster picked Malay for the greeting — wrong
-                                    // language, and missing the translation the rest of the
-                                    // bilingual report carries. Fix: in bilingual mode emit the
-                                    // fog tag in the location's own language PLUS a Malay
-                                    // translation below (matching the hourly top+Malay pattern).
-                                    // Skip the duplicate when the location's language is already
-                                    // Malay. Non-bilingual modes keep the single-language tag.
-                                    const fogTag = V.fog(_f.bandKey, amFogInWindow);
+                                // Visibility-based band for the tag (matches detail index).
+                                let visBand = null;
+                                if (winWorstVis <= 200) visBand = 'dense';
+                                else if (winWorstVis <= 1000) visBand = 'fog';
+                                // No usable visibility reading in-window: fall back to the
+                                // computeFog band ONLY when it's not dense (humidity alone
+                                // can flag 'fog', never a driving-hazard 'dense').
+                                if (visBand === null && !isFinite(winWorstVis)) {
+                                    if (_f.bandKey === 'fog') visBand = 'fog';
+                                }
+                                if (fogInWindow && visBand) {
+                                    // BILINGUAL FOG FIX (v1.3.1): emit the fog tag in the
+                                    // location's own language PLUS a Malay translation below
+                                    // in bilingual mode (matching the hourly top+Malay
+                                    // pattern); skip the duplicate when the location's
+                                    // language is already Malay.
+                                    const fogTag = V.fog(visBand, amFogInWindow);
                                     if (fogTag) {
                                         fogTagLines.push(fogTag);
                                         if (winOpts.bilingual && locLang !== 'ms' && VOCAB.ms && typeof VOCAB.ms.fog === 'function') {
-                                            const msFogTag = VOCAB.ms.fog(_f.bandKey, amFogInWindow);
+                                            const msFogTag = VOCAB.ms.fog(visBand, amFogInWindow);
                                             if (msFogTag) fogTagLines.push(msFogTag);
                                         }
                                     }
